@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Humor Coping Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#f2f3f5; --card:#ffffff; --soft:#f1f2f4; --ink:#12151a; --ink2:#474c55; --muted:#676d77; --grid:#e6e8eb; --axis:#b3b8c0;
+  --blue:#2a78d6; --red:#e34948; --yellow:#eda100; --green:#008300; --gray:#b4b8be; --red-1:#ec8a89;
+  --blue-wash:#e8f0fb; --red-wash:#fcebea; --stage:#12151a;
+  --display:"Libre Franklin", "Franklin Gothic Medium", "Segoe UI", Arial, sans-serif;
+  --sans:"Libre Franklin", "Franklin Gothic Medium", "Segoe UI", Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer}
+.top{background:var(--card);color:var(--ink);padding:22px 16px 0;border-bottom:3px solid var(--ink)}
+.wrap{max-width:1080px;margin:0 auto}
+.brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.brand h1{font-family:var(--display);font-weight:900;font-size:clamp(28px,5vw,46px);line-height:1;margin:0;letter-spacing:-.035em}
+.brand h1 s{text-decoration:none;color:#8a8f98;position:relative;white-space:nowrap}
+.brand h1 s::after{content:"";position:absolute;left:-.03em;right:-.02em;top:55%;height:.075em;background:var(--red)}
+.brand p{margin:0;color:var(--ink2);font-size:15px}
+.tabs{display:flex;gap:4px;margin-top:18px;overflow-x:auto;scrollbar-width:none}
+.tabs button{background:none;border:0;border-bottom:4px solid transparent;color:var(--ink2);padding:10px 14px 9px;font-weight:600;font-size:15.5px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+.tabs button:hover{color:var(--ink)}
+main{padding:22px 16px 60px}
+section.tab{display:none} section.tab.on{display:block}
+.card{background:var(--card);border:1px solid #d3d6db;border-radius:6px;padding:24px;margin-bottom:16px}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(25px,3.4vw,32px);line-height:1.12;margin:0 0 8px;letter-spacing:-.018em}
+h3{font-size:19px;margin:0 0 6px;font-weight:700}
+p{margin:0 0 12px} .lead{font-size:18px;color:var(--ink2);max-width:62ch}
+.small{font-size:14px;color:var(--ink2)} .tiny{font-size:12.5px;color:var(--muted)}
+.eyebrow{font-size:14px;font-weight:700;color:var(--ink2);margin:0 0 8px}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:6px;padding:13px 26px;font-weight:700;font-size:17px}
+.btn:hover{background:#2a2f37} .btn.ghost{background:none;color:var(--ink);border:1.5px solid var(--axis)} .btn.ghost:hover{border-color:var(--ink)}
+.btn.sm{padding:8px 16px;font-size:14.5px}
+.link{background:none;border:0;padding:0;color:var(--ink2);text-decoration:underline;font-size:14.5px}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* ---------- quiz ---------- */
+.quiz{max-width:760px;margin:0 auto}
+.progress{height:6px;background:#dcdfe3;border-radius:6px;overflow:hidden;margin-bottom:22px}
+.progress i{display:block;height:100%;background:var(--ink);border-radius:6px;transition:width .35s}
+.qnum{font-size:14px;font-weight:700;color:var(--ink2)}
+.qtext{font-family:var(--display);font-weight:700;letter-spacing:-.015em;font-size:clamp(25px,4.2vw,36px);line-height:1.18;margin:10px 0 26px;min-height:2.4em;text-wrap:balance}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.scale button{background:var(--soft);border:1.5px solid transparent;border-radius:6px;padding:14px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13.5px;line-height:1.2;font-weight:600;color:var(--ink2);min-height:92px}
+.scale button b{width:var(--d);height:var(--d);border-radius:50%;border:2.5px solid var(--ink);display:block;transition:background .15s}
+.scale button:hover{border-color:var(--ink)} .scale button:hover b,.scale button.sel b{background:var(--ink)}
+.scale button.sel{border-color:var(--ink);color:var(--ink)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.three button{background:var(--soft);border:1.5px solid transparent;border-radius:6px;padding:18px 8px;font-weight:700;font-size:18px}
+.three button:hover,.three button.sel{border-color:var(--ink)}
+.qfoot{display:flex;justify-content:space-between;align-items:center;margin-top:20px;min-height:24px}
+.pipe{display:grid;gap:10px;margin:22px 0 4px}
+.pipe div{display:flex;align-items:center;gap:12px;font-size:16.5px;color:var(--muted);transition:color .3s}
+.pipe div i{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--axis);flex:none;transition:all .3s}
+.pipe div.done{color:var(--ink)} .pipe div.done i{background:var(--ink);border-color:var(--ink)}
+
+/* ---------- results ---------- */
+.res-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+@media (max-width:820px){.res-grid{grid-template-columns:1fr}.scale button{font-size:11.5px;min-height:84px}.card{padding:18px}}
+.type{display:flex;align-items:center;gap:14px;margin:2px 0 8px}
+.type h2{margin:0;font-size:clamp(32px,5vw,46px)}
+.verdict{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px 6px 10px;font-weight:700;font-size:15px;border:1.5px solid var(--ink)}
+.verdict i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:#fff;font-style:normal;font-size:13px;font-weight:700}
+.rows{display:grid;gap:9px;margin-top:6px}
+.row{display:grid;grid-template-columns:118px 1fr 46px;gap:10px;align-items:center;font-size:14.5px}
+.row .track{height:10px;border-radius:6px;background:#e6e8eb;overflow:hidden}
+.row .track i{display:block;height:100%;border-radius:6px;width:0;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.row b{text-align:right;font-variant-numeric:tabular-nums}
+.meter3{display:grid;gap:14px}
+.meter3 .m{display:grid;gap:4px}
+.meter3 .m .h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.meter3 .m .h span{font-weight:700}
+.meter3 .m .h b{font-size:22px}
+.meter3 .bar{height:12px;border-radius:6px;background:#e6e8eb;position:relative}
+.meter3 .bar i{position:absolute;inset:0 auto 0 0;border-radius:6px;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.meter3 .bar u{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--card);box-shadow:0 0 0 1px var(--axis)}
+.aware{border-radius:6px;padding:16px 18px;background:var(--soft)}
+.aware.hidden-coper{background:var(--stage);color:#f4f2ea}
+.aware.hidden-coper .small{color:#cfccc2}
+.aware h3{font-family:var(--display);font-size:24px;font-weight:800;letter-spacing:-.012em;margin-bottom:4px}
+ul.pts{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+ul.pts li{padding-left:28px;position:relative}
+ul.pts li::before{content:"";position:absolute;left:3px;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--c,var(--ink))}
+details{margin-top:8px} summary{cursor:pointer;font-weight:700;font-size:15px}
+table.w{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:8px}
+table.w th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:4px 8px 4px 0;border-bottom:1px solid var(--axis)}
+table.w td{padding:5px 8px 5px 0;border-bottom:1px solid var(--grid);vertical-align:top}
+table.w td.n,table.w th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---------- charts ---------- */
+.fig{position:relative} .fig svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--sans);fill:var(--ink)} svg .t2{fill:var(--ink2)} svg .tm{fill:var(--muted)}
+svg .halo{paint-order:stroke;stroke:var(--card);stroke-width:5px;stroke-linejoin:round}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--ink2);margin:6px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:50%;display:inline-block}.sw.line{width:20px;height:3px;border-radius:2px}
+.tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:#fff;border-radius:6px;padding:8px 11px;font-size:13.5px;line-height:1.35;max-width:260px;opacity:0;transition:opacity .12s;transform:translate(-50%,calc(-100% - 12px))}
+.tip b{font-size:15px}
+.seg{display:inline-flex;background:var(--soft);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
+.seg button{background:none;border:0;border-radius:999px;padding:7px 14px;font-size:14.5px;font-weight:600;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.dots circle{transition:transform .9s cubic-bezier(.2,.7,.2,1), fill .5s}
+.bigline{font-family:var(--display);font-size:clamp(21px,3vw,28px);font-weight:700;letter-spacing:-.012em;line-height:1.2;margin:14px 0 4px;min-height:2.4em;text-wrap:balance}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+@media (max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--soft);border-radius:6px;padding:10px 14px}
+.stat span{display:block;font-size:12.5px;color:var(--ink2)} .stat b{font-size:24px;font-weight:700}
+.sliders{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:8px 0 14px}
+@media (max-width:700px){.sliders{grid-template-columns:1fr}}
+.sliders label{display:grid;gap:4px;font-weight:700;font-size:15px}
+.sliders label span{font-weight:400;font-size:13.5px;color:var(--ink2)}
+input[type=range]{width:100%;accent-color:var(--ink)}
+.eq{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:18px;background:var(--soft);border-radius:6px;padding:8px 14px;line-height:1.5;display:inline-block;margin:4px 0 10px}
+.two{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+footer{max-width:1080px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap">
+  <div class="brand"><h1><s>I&rsquo;m not okay.</s> I&rsquo;m fine, lol.</h1><p>Humor Coping Lab &nbsp;·&nbsp; interactive companion to the HUMA 140 poster</p></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="quiz" aria-selected="true">Take the quiz</button>
+    <button role="tab" data-tab="dots" aria-selected="false">The 412</button>
+    <button role="tab" data-tab="learn" aria-selected="false">Watch it learn</button>
+    <button role="tab" data-tab="sim" aria-selected="false">Stress simulator</button>
+  </div>
+</div></div>
+
+<main><div class="wrap">
+
+<!-- ======================= QUIZ ======================= -->
+<section class="tab on" id="tab-quiz"><div class="quiz" id="quiz"></div><div id="result" hidden></div></section>
+
+<!-- ======================= DOTS ======================= -->
+<section class="tab" id="tab-dots">
+  <div class="card">
+    <h3>Every dot is one student</h3>
+    <div class="seg" id="dot-views"></div>
+    <p class="bigline" id="dot-line"></p>
+    <div class="fig dots" id="dot-fig"></div>
+    <p class="small" id="dot-note" style="margin-top:10px"></p>
+  </div>
+</section>
+
+<!-- ======================= GRADIENT DESCENT ======================= -->
+<section class="tab" id="tab-learn">
+  <div class="card">
+    <h2>Watch the model learn that self-defeating jokes leave an aftertaste</h2>
+    <p class="lead">The line starts out wrong. Each step, the algorithm measures its error on all 412 students and nudges the line downhill on the error surface (right) until it cannot improve.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 14px">
+      <button class="btn sm" id="gd-go">Start learning</button><button class="btn sm ghost" id="gd-reset">Reset</button>
+      <span class="small" style="margin-left:6px">Step size</span>
+      <div class="seg" id="gd-lr"><button data-lr="0.03" aria-pressed="false">Cautious</button><button data-lr="0.15" aria-pressed="true">Sensible</button><button data-lr="0.96" aria-pressed="false">Reckless</button></div>
+    </div>
+    <div class="two">
+      <div><div class="fig" id="gd-scatter"></div></div>
+      <div><div class="fig" id="gd-bowl"></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span>Step</span><b id="gd-step">0</b></div>
+      <div class="stat"><span>Slope (aftertaste per humor point)</span><b id="gd-slope"></b></div>
+      <div class="stat"><span>Error (mean squared, standardized)</span><b id="gd-loss"></b></div>
+      <div class="stat"><span>Variance explained (R²)</span><b id="gd-r2"></b></div>
+    </div>
+    <p class="small" style="margin-top:12px" id="gd-note"></p>
+  </div>
+</section>
+
+<!-- ======================= SIMULATOR ======================= -->
+<section class="tab" id="tab-sim">
+  <div class="card">
+    <h2>Relief now, interest later</h2>
+    <p class="lead">Reframing humor drains felt stress for real. Deflecting humor only moves it into a hidden debt that leaks back. Set your own mix and run a semester.</p>
+    <div class="eq"><i>dS/dt</i> = <i>I</i> − (<i>k</i> + <i>rR</i>)<i>S</i> − <i>qMS</i> + <i>λD</i> &nbsp;&nbsp;&nbsp; <i>dD/dt</i> = <i>qMS</i> − <i>λD</i></div>
+    <div class="sliders">
+      <label>Reframing humor (R) <input type="range" id="s-r" min="0" max="1" step="0.05" value="0.2"><span id="s-r-v"></span></label>
+      <label>Deflecting humor (M) <input type="range" id="s-m" min="0" max="1" step="0.05" value="0.8"><span id="s-m-v"></span></label>
+      <label>Exam intensity (I) <input type="range" id="s-i" min="0.5" max="1.5" step="0.05" value="1"><span id="s-i-v"></span></label>
+    </div>
+    <div class="legend"><span><i class="sw line" style="background:var(--gray)"></i>No humor at all</span><span><i class="sw line" style="background:var(--blue)"></i>Your felt stress</span><span><i class="sw" style="background:var(--red-wash);border:1px solid var(--red-1);border-radius:3px"></i>Your hidden debt</span></div>
+    <div class="fig" id="sim-fig"></div>
+    <div class="stats">
+      <div class="stat"><span>Peak felt stress</span><b id="sim-peak"></b></div>
+      <div class="stat"><span>Felt stress between exams (week 12)</span><b id="sim-mid"></b></div>
+      <div class="stat"><span>Hidden debt at end of semester</span><b id="sim-debt"></b></div>
+      <div class="stat"><span>Versus no humor, average stress</span><b id="sim-vs"></b></div>
+    </div>
+    <p class="small" style="margin-top:12px" id="sim-note"></p>
+  </div>
+</section>
+
+</div></main>
+<footer>Educational demo. The quiz is not a diagnostic tool. If stress is getting on top of you, talk to someone you trust or your university counseling service.</footer>
+<div class="tip" id="tip"></div>
+
+<script>const DATA = {"sample": {"n_completed": 438, "n_attention_fail": 17, "n_speeders": 9, "n": 412, "age_mean": 19.6092, "age_sd": 1.9545, "age_min": 17, "age_max": 29, "duration_median": 13.4, "n_items": 96, "window": "5-23 October 2026", "demographics": {"gender": {"Female": 239, "Male": 173}, "level": {"Freshman": 105, "Junior": 89, "Senior": 82, "Sophomore": 78, "Graduate": 58}, "field": {"Engineering": 203, "Computing & Mathematics": 87, "Medicine & Health": 72, "Sciences": 50}, "residency": {"UAE national": 248, "International": 164}, "living": {"With family": 252, "On-campus housing": 129, "Off-campus": 31}}}, "scales": {"hsq_af": {"label": "HSQ Affiliative", "k": 8, "range": "8-56", "alpha": 0.8315, "mean": 43.068, "sd": 7.2243, "min": 22, "max": 56}, "hsq_se": {"label": "HSQ Self-enhancing", "k": 8, "range": "8-56", "alpha": 0.8619, "mean": 35.6505, "sd": 8.17, "min": 10, "max": 53}, "hsq_ag": {"label": "HSQ Aggressive", "k": 8, "range": "8-56", "alpha": 0.871, "mean": 27.8592, "sd": 8.3079, "min": 11, "max": 51}, "hsq_sd": {"label": "HSQ Self-defeating", "k": 8, "range": "8-56", "alpha": 0.8394, "mean": 28.3155, "sd": 7.9354, "min": 9, "max": 49}, "cope_humor": {"label": "Brief COPE Humor", "k": 2, "range": "2-8", "alpha": 0.683, "mean": 4.9369, "sd": 1.591, "min": 2, "max": 8}, "pss": {"label": "Perceived Stress (PSS-10)", "k": 10, "range": "0-40", "alpha": 0.8605, "mean": 18.9806, "sd": 6.7445, "min": 3, "max": 38}, "who5": {"label": "Well-being (WHO-5)", "k": 5, "range": "0-100", "alpha": 0.8245, "mean": 50.9417, "sd": 18.2315, "min": 0, "max": 100}, "hci_reach": {"label": "HCI Reach", "k": 4, "range": "1-5", "alpha": 0.7988, "mean": 3.3441, "sd": 0.8231, "min": 1.0, "max": 5.0}, "hci_reframe": {"label": "HCI Reframe", "k": 4, "range": "1-5", "alpha": 0.7544, "mean": 3.4618, "sd": 0.7775, "min": 1.5, "max": 5.0}, "hci_bond": {"label": "HCI Bond", "k": 4, "range": "1-5", "alpha": 0.7652, "mean": 3.8932, "sd": 0.7603, "min": 1.5, "max": 5.0}, "hci_roast": {"label": "HCI Roast", "k": 4, "range": "1-5", "alpha": 0.7529, "mean": 2.7518, "sd": 0.8082, "min": 1.0, "max": 5.0}, "hci_deflect": {"label": "HCI Deflect", "k": 4, "range": "1-5", "alpha": 0.7627, "mean": 2.8404, "sd": 0.8072, "min": 1.0, "max": 4.75}, "hci_after": {"label": "HCI After", "k": 4, "range": "1-5", "alpha": 0.7681, "mean": 2.8192, "sd": 0.7844, "min": 1.0, "max": 5.0}, "humor_count": {"label": "Scenario humor count", "k": 8, "range": "0-8", "alpha": null, "mean": 3.8034, "sd": 2.0332, "min": 0, "max": 8}}, "prevalence": {"coper": {"k": 297, "n": 412, "p": 0.7209, "lo": 0.6757, "hi": 0.762}, "says_yes": {"k": 194, "n": 412, "p": 0.4709, "lo": 0.4232, "hi": 0.5191}, "says_not_sure": {"k": 96, "n": 412, "p": 0.233, "lo": 0.1948, "hi": 0.2762}, "says_no": {"k": 122, "n": 412, "p": 0.2961, "lo": 0.2541, "hi": 0.3419}, "hidden_among_copers": {"k": 130, "n": 297, "p": 0.4377, "lo": 0.3824, "hi": 0.4946}, "hidden_overall": {"k": 130, "n": 412, "p": 0.3155, "lo": 0.2725, "hi": 0.3619}, "humor_any": {"k": 386, "n": 412, "p": 0.9369, "lo": 0.9091, "hi": 0.9566}, "humor_count_dist": [26, 35, 54, 67, 67, 71, 55, 26, 11], "scenarios": [{"label": "Stumbled through a class presentation", "H": 0.6966, "P": 0.1092, "S": 0.0583, "A": 0.1359}, {"label": "Three deadlines due the same night", "H": 0.6383, "P": 0.216, "S": 0.0583, "A": 0.0874}, {"label": "Failed a quiz you studied for", "H": 0.5971, "P": 0.165, "S": 0.1165, "A": 0.1214}, {"label": "Group-project teammate went silent", "H": 0.5461, "P": 0.1869, "S": 0.1189, "A": 0.1481}, {"label": "Internship rejection email", "H": 0.4466, "P": 0.2015, "S": 0.1335, "A": 0.2184}, {"label": "Pressure from family about grades", "H": 0.3374, "P": 0.1505, "S": 0.267, "A": 0.2451}, {"label": "Argument with a close friend", "H": 0.2961, "P": 0.1845, "S": 0.3107, "A": 0.2087}, {"label": "Feeling homesick or lonely", "H": 0.2451, "P": 0.1141, "S": 0.3519, "A": 0.2888}], "felt_bad_copers": [0.1178, 0.3098, 0.3468, 0.165, 0.0606], "felt_bad_all": [0.1505, 0.2913, 0.3252, 0.1748, 0.0583], "felt_bad_sometimes_plus": {"k": 170, "n": 297, "p": 0.5724, "lo": 0.5156, "hi": 0.6274}, "felt_bad_often_plus": {"k": 67, "n": 297, "p": 0.2256, "lo": 0.1817, "hi": 0.2765}, "brief_cope_some": {"k": 327, "n": 412, "p": 0.7937, "lo": 0.752, "hi": 0.83}}, "awareness": {"flows": [{"pre": "Yes", "coper": 1, "post": "Yes", "n": 162}, {"pre": "Yes", "coper": 1, "post": "Not sure", "n": 5}, {"pre": "Yes", "coper": 1, "post": "No", "n": 0}, {"pre": "Yes", "coper": 0, "post": "Yes", "n": 27}, {"pre": "Yes", "coper": 0, "post": "Not sure", "n": 0}, {"pre": "Yes", "coper": 0, "post": "No", "n": 0}, {"pre": "Not sure", "coper": 1, "post": "Yes", "n": 36}, {"pre": "Not sure", "coper": 1, "post": "Not sure", "n": 31}, {"pre": "Not sure", "coper": 1, "post": "No", "n": 2}, {"pre": "Not sure", "coper": 0, "post": "Yes", "n": 5}, {"pre": "Not sure", "coper": 0, "post": "Not sure", "n": 20}, {"pre": "Not sure", "coper": 0, "post": "No", "n": 2}, {"pre": "No", "coper": 1, "post": "Yes", "n": 16}, {"pre": "No", "coper": 1, "post": "Not sure", "n": 18}, {"pre": "No", "coper": 1, "post": "No", "n": 27}, {"pre": "No", "coper": 0, "post": "Yes", "n": 2}, {"pre": "No", "coper": 0, "post": "Not sure", "n": 14}, {"pre": "No", "coper": 0, "post": "No", "n": 45}], "pre_by_coper": {"Yes": [167, 27], "Not sure": [69, 27], "No": [61, 61]}, "hidden_switched_to_yes": {"k": 52, "n": 130, "p": 0.4, "lo": 0.3198, "hi": 0.4859}, "post_yes": {"k": 248, "n": 412, "p": 0.6019, "lo": 0.5539, "hi": 0.6481}, "hidden_after_survey": {"k": 83, "n": 297, "p": 0.2795, "lo": 0.2315, "hi": 0.3331}}, "phrases": [{"text": "“I’m fine lol”", "p": 0.716}, {"text": "“It is what it is”", "p": 0.6068}, {"text": "“I’m so cooked”", "p": 0.5631}, {"text": "“We move”", "p": 0.4126}, {"text": "“Khalas, it’s over for me”", "p": 0.3762}, {"text": "“This is fine”", "p": 0.3252}, {"text": "“Can’t fail if I don’t check the grade”", "p": 0.2961}, {"text": "“At least it’s a good story”", "p": 0.2549}], "hidden_vs_aware": {"who5": {"mean_a": 47.5692, "mean_b": 55.7605, "d": -0.4817, "t": -4.1182, "p": 0.0}, "pss": {"mean_a": 20.0308, "mean_b": 18.1257, "d": 0.2831, "t": 2.4202, "p": 0.0161}, "hci_after": {"mean_a": 3.0827, "mean_b": 2.7006, "d": 0.5291, "t": 4.5239, "p": 0.0}, "hci_deflect": {"mean_a": 3.1827, "mean_b": 2.744, "d": 0.5853, "t": 5.0041, "p": 0.0}, "hci_reframe": {"mean_a": 3.3269, "mean_b": 3.8174, "d": -0.7199, "t": -6.1551, "p": 0.0}, "hci_bond": {"mean_a": 4.0269, "mean_b": 4.1228, "d": -0.1525, "t": -1.3037, "p": 0.1933}, "hsq_sd": {"mean_a": 30.6231, "mean_b": 28.7784, "d": 0.2484, "t": 2.1237, "p": 0.0345}, "hsq_se": {"mean_a": 33.7, "mean_b": 39.4491, "d": -0.7959, "t": -6.8051, "p": 0.0}}, "coper_vs_non": {"who5": {"mean_a": 52.1751, "mean_b": 47.7565, "d": 0.2435, "t": 2.2172, "p": 0.0272}, "pss": {"mean_a": 18.9596, "mean_b": 19.0348, "d": -0.0111, "t": -0.1014, "p": 0.9193}, "memes_per_week": {"mean_a": 3.0135, "mean_b": 1.5565, "d": 0.6934, "t": 6.313, "p": 0.0}, "hci_after": {"mean_a": 2.8678, "mean_b": 2.6935, "d": 0.2231, "t": 2.0316, "p": 0.0428}}, "corr": {"vars": ["hsq_af", "hsq_se", "hsq_ag", "hsq_sd", "cope_humor", "humor_count", "hci_deflect", "hci_after", "pss", "who5"], "labels": ["Affiliative", "Self-enhancing", "Aggressive", "Self-defeating", "Coping humor (COPE)", "Humor-first count", "Deflecting", "Aftertaste", "Stress (PSS)", "Well-being (WHO-5)"], "r": [[1.0, 0.5197, 0.2783, 0.119, 0.4475, 0.4995, 0.0277, -0.0957, -0.1968, 0.3264], [0.5197, 1.0, 0.0943, -0.2156, 0.3579, 0.3201, -0.251, -0.3561, -0.3941, 0.4846], [0.2783, 0.0943, 1.0, 0.4042, 0.3329, 0.283, 0.3921, 0.2221, 0.0527, 0.0288], [0.119, -0.2156, 0.4042, 1.0, 0.3105, 0.3086, 0.5975, 0.5138, 0.2297, -0.2716], [0.4475, 0.3579, 0.3329, 0.3105, 1.0, 0.7084, 0.2379, 0.1161, 0.0162, 0.1326], [0.4995, 0.3201, 0.283, 0.3086, 0.7084, 1.0, 0.2158, 0.073, 0.0026, 0.1214], [0.0277, -0.251, 0.3921, 0.5975, 0.2379, 0.2158, 1.0, 0.4766, 0.2965, -0.3213], [-0.0957, -0.3561, 0.2221, 0.5138, 0.1161, 0.073, 0.4766, 1.0, 0.3856, -0.4498], [-0.1968, -0.3941, 0.0527, 0.2297, 0.0162, 0.0026, 0.2965, 0.3856, 1.0, -0.5289], [0.3264, 0.4846, 0.0288, -0.2716, 0.1326, 0.1214, -0.3213, -0.4498, -0.5289, 1.0]], "p": [[0, 0.0, 0.0, 0.0156, 0.0, 0.0, 0.5746, 0.0522, 0.0001, 0.0], [0.0, 0, 0.0558, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0558, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2862, 0.5596], [0.0156, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0184, 0.7429, 0.007], [0.0, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0.1391, 0.9587, 0.0136], [0.5746, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0], [0.0522, 0.0, 0.0, 0.0, 0.0184, 0.1391, 0.0, 0, 0.0, 0.0], [0.0001, 0.0, 0.2862, 0.0, 0.7429, 0.9587, 0.0, 0.0, 0, 0.0], [0.0, 0.0, 0.5596, 0.0, 0.007, 0.0136, 0.0, 0.0, 0.0, 0]]}, "regression": {"steps": [{"label": "Step 1: controls + stress", "r2": 0.3231, "adj_r2": 0.3148}, {"label": "Step 2: + four humor styles", "r2": 0.4273, "adj_r2": 0.4145, "dr2": 0.1042, "f": 18.2883, "p": 0.0, "df": [4, 402]}, {"label": "Step 3: + stress × self-enhancing", "r2": 0.4488, "adj_r2": 0.435, "dr2": 0.0215, "f": 15.61, "p": 0.0001, "df": [1, 401]}], "final": [{"key": "male", "label": "Gender (male)", "beta": 0.0203, "se": 0.0376, "lo": -0.0536, "hi": 0.0943, "t": 0.5406, "p": 0.5891}, {"key": "level_num", "label": "Year of study", "beta": -0.0241, "se": 0.0373, "lo": -0.0975, "hi": 0.0493, "t": -0.645, "p": 0.5193}, {"key": "exams_next_2wk", "label": "Exams in next 2 weeks", "beta": -0.0028, "se": 0.0384, "lo": -0.0783, "hi": 0.0727, "t": -0.0728, "p": 0.942}, {"key": "sleep_hours", "label": "Sleep (hours)", "beta": 0.1739, "se": 0.0419, "lo": 0.0915, "hi": 0.2564, "t": 4.1462, "p": 0.0}, {"key": "pss", "label": "Perceived stress", "beta": -0.3122, "se": 0.0453, "lo": -0.4012, "hi": -0.2232, "t": -6.8957, "p": 0.0}, {"key": "hsq_af", "label": "Affiliative humor", "beta": 0.1246, "se": 0.0466, "lo": 0.033, "hi": 0.2163, "t": 2.6745, "p": 0.0078}, {"key": "hsq_se", "label": "Self-enhancing humor", "beta": 0.1988, "se": 0.0485, "lo": 0.1034, "hi": 0.2942, "t": 4.0954, "p": 0.0001}, {"key": "hsq_ag", "label": "Aggressive humor", "beta": 0.0347, "se": 0.043, "lo": -0.0499, "hi": 0.1193, "t": 0.8065, "p": 0.4204}, {"key": "hsq_sd", "label": "Self-defeating humor", "beta": -0.1757, "se": 0.0436, "lo": -0.2613, "hi": -0.0901, "t": -4.034, "p": 0.0001}, {"key": "pss_x_se", "label": "Stress × Self-enhancing", "beta": 0.1471, "se": 0.0372, "lo": 0.0739, "hi": 0.2203, "t": 3.9509, "p": 0.0001}], "f": 32.6487, "f_p": 0.0, "dof": 401, "n": 412}, "buffer": {"slopes": [{"label": "Low self-enhancing humor (−1 SD)", "level": -8.17, "slope": -1.2421, "se": 0.1612, "t": -7.7048, "p": 0.0, "intercept": 48.3734}, {"label": "Average", "level": 0.0, "slope": -0.8439, "se": 0.1224, "t": -6.8957, "p": 0.0, "intercept": 51.9976}, {"label": "High self-enhancing humor (+1 SD)", "level": 8.17, "slope": -0.4457, "se": 0.1558, "t": -2.8605, "p": 0.0045, "intercept": 55.6219}], "pss_mean": 18.9806, "pss_sd": 6.7445, "se_mean": 35.6505, "se_sd": 8.17, "b_int": 0.0487, "p_int": 0.0001, "who_at": {"low_se": [56.7508, 39.9959], "high_se": [58.6281, 52.6156]}}, "mediation": {"a": 0.4489, "a_p": 0.0, "b": -0.2702, "b_p": 0.0, "direct": -0.0372, "direct_p": 0.4245, "total": -0.1585, "total_p": 0.0002, "indirect": -0.1213, "ci": [-0.1748, -0.0749], "prop_mediated": 0.7654, "n_boot": 5000, "hist": [2, 3, 1, 5, 7, 12, 14, 17, 20, 34, 49, 59, 82, 102, 106, 136, 142, 186, 208, 278, 273, 276, 338, 315, 335, 296, 293, 280, 243, 217, 161, 137, 116, 83, 69, 34, 28, 18, 13, 6, 2, 2, 1, 1], "edges": [-0.217, -0.2129, -0.2088, -0.2047, -0.2006, -0.1965, -0.1924, -0.1883, -0.1842, -0.1801, -0.176, -0.1719, -0.1678, -0.1637, -0.1596, -0.1555, -0.1514, -0.1473, -0.1432, -0.1391, -0.135, -0.1309, -0.1268, -0.1227, -0.1186, -0.1145, -0.1104, -0.1063, -0.1022, -0.0981, -0.094, -0.0899, -0.0859, -0.0818, -0.0777, -0.0736, -0.0695, -0.0654, -0.0613, -0.0572, -0.0531, -0.049, -0.0449, -0.0408, -0.0367]}, "model_tests": {"after_interaction": {"beta": 0.1005, "se": 0.0434, "p": 0.0211, "r2": 0.3482}, "stress": [{"key": "exams", "beta": 0.1721, "p": 0.0001, "lo": 0.0864, "hi": 0.2578}, {"key": "se", "beta": -0.3487, "p": 0.0, "lo": -0.4372, "hi": -0.2602}, {"key": "deflect", "beta": 0.2144, "p": 0.0, "lo": 0.1259, "hi": 0.3028}]}, "clusters": {"sweep": [{"k": 2, "inertia": 1172.5935, "silhouette": 0.2794}, {"k": 3, "inertia": 822.9434, "silhouette": 0.302}, {"k": 4, "inertia": 707.3556, "silhouette": 0.2717}, {"k": 5, "inertia": 646.009, "silhouette": 0.2231}, {"k": 6, "inertia": 592.2842, "silhouette": 0.2211}, {"k": 7, "inertia": 545.7065, "silhouette": 0.2162}, {"k": 8, "inertia": 509.1161, "silhouette": 0.2036}], "k": 4, "archetypes": [{"name": "Reframer", "n": 140, "share": 0.3398, "centroid": [0.4885, 0.9024, -0.4341, -0.6941], "pc": [0.3643, 1.2564], "who5": 61.1429, "who5_ci": 2.4294, "pss": 15.7143, "after": 2.375, "deflect": 2.3786, "coper": 0.7929, "says_yes": 0.6714, "hidden_among_copers": 0.2883, "felt_bad": 0.3429, "memes": 2.3214}, {"name": "Deflector", "n": 88, "share": 0.2136, "centroid": [0.0032, -0.6785, -0.0994, 1.0341], "pc": [-0.1127, -1.0365], "who5": 39.9091, "who5_ci": 3.1931, "pss": 20.9432, "after": 3.3608, "deflect": 3.4517, "coper": 0.7614, "says_yes": 0.3295, "hidden_among_copers": 0.597, "felt_bad": 0.7955, "memes": 3.2386}, {"name": "All-in comic", "n": 100, "share": 0.2427, "centroid": [0.5158, 0.1629, 1.304, 0.5835], "pc": [1.2328, -0.7766], "who5": 52.84, "who5_ci": 3.0543, "pss": 20.04, "after": 2.975, "deflect": 3.1875, "coper": 0.9, "says_yes": 0.54, "hidden_among_copers": 0.4444, "felt_bad": 0.64, "memes": 3.26}, {"name": "Straight face", "n": 84, "share": 0.2039, "centroid": [-1.4316, -0.9872, -0.7248, -0.6211], "pc": [-1.9567, -0.0837], "who5": 43.2381, "who5_ci": 4.1811, "pss": 21.1071, "after": 2.8065, "deflect": 2.5565, "coper": 0.3452, "says_yes": 0.2024, "hidden_among_copers": 0.6207, "felt_bad": 0.5714, "memes": 1.6429}], "styles": ["Affiliative", "Self-enhancing", "Aggressive", "Self-defeating"], "pca": {"evr": [0.4154, 0.3478], "loadings": [[0.6519, 0.2028], [0.498, 0.5436], [0.5069, -0.4357], [0.2646, -0.6881]]}, "anova_who5": {"f": 39.2986, "p": 0.0, "eta2": 0.2242}, "recovery": 0.7816}, "hidden_model": {"n": 297, "base_rate": 0.4377, "coefs": [{"key": "hci_reach", "label": "Reaches for humor", "or": 0.339, "lo": 0.2369, "hi": 0.4851, "b": -1.0817, "p": 0.0}, {"key": "hci_deflect", "label": "Deflecting (jokes to change subject)", "or": 2.1014, "lo": 1.5088, "hi": 2.9267, "b": 0.7426, "p": 0.0}, {"key": "hci_reframe", "label": "Reframing (uses humor on purpose)", "or": 0.6404, "lo": 0.4591, "hi": 0.8933, "b": -0.4456, "p": 0.0087}, {"key": "hci_bond", "label": "Bonding (jokes with friends)", "or": 1.2721, "lo": 0.9338, "hi": 1.733, "b": 0.2407, "p": 0.127}, {"key": "male", "label": "Gender (male)", "or": 1.1923, "lo": 0.9077, "hi": 1.5662, "b": 0.1759, "p": 0.2063}, {"key": "level_num", "label": "Year of study", "or": 0.8821, "lo": 0.6735, "hi": 1.1553, "b": -0.1254, "p": 0.3623}, {"key": "hci_roast", "label": "Self-roasting", "or": 1.1087, "lo": 0.8104, "hi": 1.5168, "b": 0.1032, "p": 0.5186}, {"key": "pss", "label": "Perceived stress", "or": 1.0732, "lo": 0.7836, "hi": 1.4696, "b": 0.0706, "p": 0.6598}], "auc_lr": 0.775, "auc_lr_sd": 0.003, "auc_rf": 0.7601, "auc_rf_sd": 0.0047, "roc": {"fpr": [0.0, 0.0, 0.006, 0.006, 0.012, 0.012, 0.012, 0.012, 0.012, 0.018, 0.0299, 0.0359, 0.0479, 0.0599, 0.0599, 0.0719, 0.0838, 0.0898, 0.0958, 0.1138, 0.1257, 0.1377, 0.1557, 0.1677, 0.1916, 0.2096, 0.2275, 0.2395, 0.2395, 0.2575, 0.2695, 0.2814, 0.2994, 0.3054, 0.3174, 0.3293, 0.3533, 0.3653, 0.3832, 0.3952, 0.4192, 0.4371, 0.4491, 0.4551, 0.4731, 0.491, 0.515, 0.5449, 0.5689, 0.5868, 0.6048, 0.6168, 0.6287, 0.6467, 0.6647, 0.6826, 0.7066, 0.7305, 0.7545, 0.7784, 0.8024, 0.8144, 0.8383, 0.8563, 0.8683, 0.8922, 0.9222, 0.9461, 0.9701, 1.0], "tpr": [0.0, 0.0308, 0.0538, 0.0846, 0.1154, 0.1462, 0.1769, 0.2154, 0.2462, 0.2692, 0.2923, 0.3154, 0.3308, 0.3462, 0.3846, 0.4, 0.4154, 0.4462, 0.4692, 0.4769, 0.5, 0.5154, 0.5231, 0.5385, 0.5462, 0.5538, 0.5615, 0.5846, 0.6154, 0.6231, 0.6462, 0.6615, 0.6692, 0.7, 0.7154, 0.7308, 0.7308, 0.7538, 0.7615, 0.7769, 0.7846, 0.7923, 0.8077, 0.8385, 0.8462, 0.8538, 0.8538, 0.8538, 0.8538, 0.8615, 0.8769, 0.8923, 0.9077, 0.9231, 0.9308, 0.9385, 0.9462, 0.9462, 0.9462, 0.9462, 0.9538, 0.9692, 0.9692, 0.9846, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}, "confusion": {"tp": 76, "fp": 40, "fn": 54, "tn": 127}, "accuracy": 0.6835}, "benchmark": {"models": [{"name": "Mean only", "r2": -0.0039, "r2_sd": 0.0017, "rmse": 18.267}, {"name": "Linear regression", "r2": 0.4299, "r2_sd": 0.0033, "rmse": 13.7651}, {"name": "Ridge", "r2": 0.4347, "r2_sd": 0.0025, "rmse": 13.707}, {"name": "LASSO", "r2": 0.4299, "r2_sd": 0.0019, "rmse": 13.7651}, {"name": "Random forest", "r2": 0.4172, "r2_sd": 0.006, "rmse": 13.9185}], "importance": [{"label": "Perceived stress", "key": "pss", "perm": 0.1314}, {"label": "Self-enhancing humor", "key": "hsq_se", "perm": 0.0864}, {"label": "Sleep (hours)", "key": "sleep_hours", "perm": 0.0696}, {"label": "Aftertaste", "key": "hci_after", "perm": 0.0635}, {"label": "Affiliative humor", "key": "hsq_af", "perm": 0.0295}, {"label": "Deflecting", "key": "hci_deflect", "perm": 0.0125}, {"label": "Aggressive humor", "key": "hsq_ag", "perm": 0.0031}, {"label": "Self-defeating humor", "key": "hsq_sd", "perm": 0.0019}, {"label": "Coping humor (COPE)", "key": "cope_humor", "perm": 0.0006}, {"label": "Exams in next 2 weeks", "key": "exams_next_2wk", "perm": 0.0006}, {"label": "Gender (male)", "key": "male", "perm": -0.0005}, {"label": "Year of study", "key": "level_num", "perm": -0.0007}, {"label": "GPA", "key": "gpa", "perm": -0.0018}], "lasso_kept": 11.8333, "n_features": 13}, "quiz": {"items": [{"key": "hci_reach_2", "facet": "reach", "text": "I turn stressful moments into funny stories while they are still happening."}, {"key": "hci_after_2", "facet": "after", "text": "I have laughed along with something and regretted it later."}, {"key": "hci_reframe_4", "facet": "reframe", "text": "After I laugh about a problem, I usually feel ready to deal with it."}, {"key": "hci_bond_1", "facet": "bond", "text": "Laughing with friends about a shared struggle makes me feel less alone."}, {"key": "hci_roast_4", "facet": "roast", "text": "I let people laugh at me more than I am comfortable with."}, {"key": "hci_reach_4", "facet": "reach", "text": "The more stressed I am, the more jokes I make."}, {"key": "hci_deflect_4", "facet": "deflect", "text": "When someone asks how I am really doing, I answer with a joke."}, {"key": "hci_after_3", "facet": "after", "text": "I sometimes wish I had said how I felt instead of making a joke."}, {"key": "hci_reframe_2", "facet": "reframe", "text": "Even when I am alone, I can laugh at how absurd a bad situation is."}, {"key": "hci_bond_2", "facet": "bond", "text": "I use humor to lift the mood when people around me are stressed."}], "curve": [{"k": 1, "item": "hci_reach_2", "r2": [0.4624, 0.1755, 0.036], "mean_r2": 0.2246}, {"k": 2, "item": "hci_after_2", "r2": [0.4603, 0.2217, 0.4091], "mean_r2": 0.3637}, {"k": 3, "item": "hci_reframe_4", "r2": [0.494, 0.4654, 0.427], "mean_r2": 0.4621}, {"k": 4, "item": "hci_bond_1", "r2": [0.5251, 0.6284, 0.4283], "mean_r2": 0.5273}, {"k": 5, "item": "hci_roast_4", "r2": [0.5292, 0.6308, 0.583], "mean_r2": 0.581}, {"k": 6, "item": "hci_reach_4", "r2": [0.5979, 0.641, 0.5889], "mean_r2": 0.6093}, {"k": 7, "item": "hci_deflect_4", "r2": [0.5972, 0.6458, 0.6495], "mean_r2": 0.6308}, {"k": 8, "item": "hci_after_3", "r2": [0.5989, 0.6469, 0.6876], "mean_r2": 0.6445}, {"k": 9, "item": "hci_reframe_2", "r2": [0.5954, 0.6871, 0.6894], "mean_r2": 0.6573}, {"k": 10, "item": "hci_bond_2", "r2": [0.5941, 0.7141, 0.6908], "mean_r2": 0.6664}, {"k": 11, "item": "hci_reach_3", "r2": [0.6139, 0.7156, 0.6912], "mean_r2": 0.6736}, {"k": 12, "item": "hci_roast_3", "r2": [0.6131, 0.7147, 0.7106], "mean_r2": 0.6795}, {"k": 13, "item": "hci_reach_1", "r2": [0.6298, 0.7126, 0.7107], "mean_r2": 0.6844}, {"k": 14, "item": "hci_reframe_3", "r2": [0.6326, 0.724, 0.7085], "mean_r2": 0.6883}, {"k": 15, "item": "hci_roast_2", "r2": [0.6328, 0.7234, 0.719], "mean_r2": 0.6918}, {"k": 16, "item": "hci_bond_3", "r2": [0.632, 0.7358, 0.7182], "mean_r2": 0.6953}, {"k": 17, "item": "hci_bond_4", "r2": [0.634, 0.7417, 0.7177], "mean_r2": 0.6978}, {"k": 18, "item": "hci_roast_1", "r2": [0.6338, 0.7433, 0.7226], "mean_r2": 0.6999}, {"k": 19, "item": "hci_after_4", "r2": [0.6316, 0.7419, 0.731], "mean_r2": 0.7015}, {"k": 20, "item": "hci_after_1", "r2": [0.6276, 0.7396, 0.7369], "mean_r2": 0.7014}, {"k": 21, "item": "hci_reframe_1", "r2": [0.6257, 0.7402, 0.7369], "mean_r2": 0.701}, {"k": 22, "item": "hci_deflect_2", "r2": [0.6239, 0.7418, 0.7353], "mean_r2": 0.7003}, {"k": 23, "item": "hci_deflect_3", "r2": [0.6229, 0.7398, 0.7348], "mean_r2": 0.6992}, {"k": 24, "item": "hci_deflect_1", "r2": [0.6205, 0.7364, 0.7337], "mean_r2": 0.6969}], "k": 10, "cv_r2_at_k": {"reliance": 0.5941, "helps": 0.7141, "hurts": 0.6908}, "cv_r2_full": {"reliance": 0.6205, "helps": 0.7364, "hurts": 0.7337}, "linear": {"reliance": {"b0": -0.4306, "w": [0.3666, 0.0263, 0.1043, 0.1299, 0.0297, 0.3222, 0.0096, 0.0603, 0.0238, 0.0432], "r": 0.7834, "quantiles": [-2.3389, -2.0072, -1.8716, -1.7164, -1.4898, -1.3974, -1.3265, -1.2186, -1.1974, -1.1636, -1.1087, -1.0601, -1.013, -0.9543, -0.8925, -0.839, -0.8216, -0.772, -0.7256, -0.6598, -0.6297, -0.592, -0.5558, -0.5207, -0.5, -0.4815, -0.4506, -0.4223, -0.3776, -0.3623, -0.3334, -0.2931, -0.2778, -0.2722, -0.2687, -0.2421, -0.2206, -0.1993, -0.1613, -0.1504, -0.1306, -0.1204, -0.0866, -0.0617, -0.036, -0.0002, 0.0322, 0.043, 0.0648, 0.0757, 0.0891, 0.107, 0.1188, 0.1315, 0.1453, 0.1698, 0.1979, 0.2194, 0.2316, 0.2506, 0.2708, 0.29, 0.3161, 0.3462, 0.3501, 0.3781, 0.3919, 0.4047, 0.4296, 0.4387, 0.4456, 0.4747, 0.4995, 0.5363, 0.5611, 0.5729, 0.5938, 0.6099, 0.6316, 0.6528, 0.6871, 0.702, 0.7267, 0.7465, 0.7616, 0.7681, 0.8064, 0.8244, 0.8429, 0.8647, 0.9073, 0.9566, 1.0421, 1.0638, 1.0848, 1.2003, 1.2681, 1.3249, 1.3974, 1.4195, 1.5955]}, "helps": {"b0": -0.7784, "w": [0.0644, -0.0277, 0.2391, 0.3288, -0.0642, 0.1339, -0.0533, -0.0786, 0.2253, 0.1854], "r": 0.8543, "quantiles": [-2.355, -2.0311, -1.8777, -1.8109, -1.6768, -1.5763, -1.508, -1.4407, -1.3719, -1.3069, -1.1881, -1.1311, -1.0647, -1.0303, -0.9982, -0.949, -0.8643, -0.8329, -0.8197, -0.7557, -0.7407, -0.7276, -0.7045, -0.6762, -0.6164, -0.5935, -0.5588, -0.5281, -0.4806, -0.4526, -0.4439, -0.409, -0.3921, -0.3567, -0.3438, -0.3226, -0.2767, -0.2619, -0.2369, -0.2179, -0.1867, -0.1524, -0.1242, -0.0784, -0.0675, -0.0405, 0.0071, 0.0235, 0.0546, 0.0979, 0.1292, 0.1444, 0.1644, 0.1766, 0.1988, 0.2557, 0.2706, 0.2823, 0.2905, 0.3241, 0.3536, 0.3864, 0.4021, 0.4114, 0.4497, 0.4754, 0.5184, 0.5344, 0.5498, 0.565, 0.5847, 0.6063, 0.6293, 0.6461, 0.6613, 0.678, 0.6901, 0.7141, 0.7408, 0.7576, 0.7794, 0.7967, 0.8163, 0.8242, 0.8435, 0.8747, 0.8949, 0.9267, 0.9391, 0.9754, 1.0171, 1.0394, 1.0799, 1.1024, 1.136, 1.1912, 1.2671, 1.3178, 1.4225, 1.5365, 1.705]}, "hurts": {"b0": 0.1909, "w": [0.0567, 0.2837, -0.0234, 0.0094, 0.3233, 0.0827, 0.2084, 0.2454, -0.086, 0.0399], "r": 0.8402, "quantiles": [-2.0709, -1.8061, -1.6557, -1.5283, -1.4267, -1.3747, -1.2581, -1.1943, -1.1677, -1.1141, -1.0888, -1.0346, -1.0218, -0.9818, -0.9073, -0.8959, -0.8624, -0.8462, -0.7769, -0.7544, -0.7228, -0.7128, -0.6948, -0.6708, -0.6285, -0.5861, -0.5622, -0.5488, -0.5164, -0.4939, -0.469, -0.4406, -0.4221, -0.3976, -0.3648, -0.3482, -0.3193, -0.2983, -0.2806, -0.2519, -0.2208, -0.1956, -0.1751, -0.1586, -0.1164, -0.1093, -0.0971, -0.0346, -0.019, 0.0189, 0.0225, 0.0364, 0.0501, 0.0765, 0.1151, 0.1321, 0.144, 0.1586, 0.1878, 0.2013, 0.2179, 0.2503, 0.2768, 0.2918, 0.31, 0.333, 0.3454, 0.3592, 0.3735, 0.3968, 0.4181, 0.4427, 0.4665, 0.4843, 0.4985, 0.5342, 0.5787, 0.6068, 0.6608, 0.6958, 0.7135, 0.7639, 0.7788, 0.8166, 0.8343, 0.8518, 0.887, 0.9531, 0.9745, 0.9956, 1.0275, 1.0435, 1.1741, 1.2543, 1.4057, 1.4443, 1.5035, 1.7487, 1.8596, 1.916, 2.2129]}, "pc1": {"b0": -0.8922, "w": [0.1755, 0.0327, 0.2583, 0.4451, 0.1115, 0.1918, 0.0432, 0.0148, 0.143, 0.2555], "r": 0.8128, "quantiles": [-3.3872, -2.7023, -2.5319, -2.3112, -2.2008, -2.0507, -1.8632, -1.7367, -1.6644, -1.6014, -1.4901, -1.3886, -1.3258, -1.2818, -1.161, -1.1321, -1.0971, -1.0196, -0.9659, -0.9442, -0.8775, -0.8431, -0.7537, -0.6893, -0.6516, -0.602, -0.5452, -0.5132, -0.4853, -0.4336, -0.4102, -0.3742, -0.3622, -0.3478, -0.3255, -0.2944, -0.2539, -0.2164, -0.1997, -0.178, -0.1631, -0.1361, -0.1098, -0.0633, -0.0404, -0.0113, 0.0767, 0.0934, 0.1075, 0.1262, 0.1583, 0.1892, 0.2121, 0.2231, 0.2535, 0.2915, 0.3038, 0.331, 0.3513, 0.38, 0.3894, 0.4138, 0.4434, 0.4638, 0.4778, 0.5115, 0.5313, 0.5817, 0.6339, 0.6654, 0.6821, 0.6909, 0.7169, 0.732, 0.7572, 0.7815, 0.8062, 0.8454, 0.8735, 0.8894, 0.9112, 0.9359, 0.9621, 1.0363, 1.1173, 1.1373, 1.1641, 1.197, 1.2231, 1.2544, 1.2776, 1.3161, 1.344, 1.3723, 1.3784, 1.4041, 1.4444, 1.478, 1.5801, 1.6342, 1.9986]}, "pc2": {"b0": -0.4339, "w": [-0.1031, -0.1433, 0.1651, 0.0722, -0.4018, -0.0118, -0.2094, -0.1836, 0.2994, 0.0133], "r": 0.7778, "quantiles": [-2.4421, -1.9231, -1.8731, -1.6809, -1.593, -1.5591, -1.4952, -1.4294, -1.3615, -1.2479, -1.1784, -1.1093, -1.0857, -1.0451, -1.018, -0.9861, -0.938, -0.8993, -0.8904, -0.8688, -0.848, -0.8199, -0.7969, -0.7421, -0.6965, -0.6263, -0.6065, -0.5466, -0.5303, -0.5109, -0.4824, -0.4407, -0.4119, -0.3892, -0.3768, -0.3515, -0.3333, -0.3196, -0.2981, -0.2522, -0.2133, -0.1993, -0.1901, -0.148, -0.1159, -0.0791, -0.0603, -0.0443, -0.0258, -0.0153, 0.005, 0.0357, 0.0447, 0.0661, 0.0833, 0.1297, 0.1518, 0.1648, 0.1975, 0.2135, 0.2353, 0.2595, 0.2891, 0.3098, 0.3439, 0.3828, 0.4009, 0.4272, 0.4694, 0.4936, 0.5151, 0.5414, 0.5747, 0.6022, 0.6304, 0.662, 0.6908, 0.7132, 0.746, 0.7614, 0.7891, 0.8272, 0.8559, 0.8801, 0.9399, 0.9944, 1.0195, 1.0721, 1.1092, 1.1623, 1.2112, 1.249, 1.2887, 1.3716, 1.4531, 1.5084, 1.5852, 1.6244, 1.7419, 1.9659, 2.3639]}}, "coper_logit": {"b0": 0.351, "w": [0.7832, -0.0917, 0.262, 0.3183, 0.0643, 0.8892, 0.0996, 0.3854, -0.0134, 0.1875]}, "softmax": {"W": [[0.0644, -0.4909, 0.5287, 0.514, -0.659, 0.0576, -0.358, -0.2931, 0.6278, 0.0838], [0.0011, 0.3506, -0.3092, -0.081, 0.8668, 0.0092, 0.5429, 0.12, -0.2243, 0.1853], [0.4057, 0.156, 0.184, 0.5891, 0.2661, 0.3317, 0.0764, 0.0332, -0.0536, 0.2706], [-0.4712, -0.0157, -0.4036, -1.0221, -0.4739, -0.3985, -0.2613, 0.1399, -0.35, -0.5397]], "b": [-1.062, 0.5017, -0.5227, 1.083]}, "archetype_accuracy": 0.667, "archetype_chance": 0.3398, "coper_auc": 0.8472, "archetype_names": ["Reframer", "Deflector", "All-in comic", "Straight face"]}, "people": {"coper": [1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0], "aware": [2, 1, 1, 1, 1, 2, 0, 0, 2, 2, 2, 0, 2, 2, 2, 0, 0, 2, 1, 2, 2, 2, 0, 2, 0, 2, 1, 2, 0, 1, 2, 0, 1, 2, 0, 0, 1, 2, 0, 2, 0, 2, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 2, 1, 0, 2, 2, 0, 0, 2, 1, 1, 2, 1, 1, 1, 2, 2, 2, 0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2, 2, 0, 0, 2, 0, 0, 0, 2, 0, 2, 2, 1, 0, 1, 0, 2, 2, 1, 2, 1, 1, 0, 2, 2, 0, 2, 0, 2, 2, 1, 1, 2, 1, 2, 0, 0, 0, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1, 0, 2, 2, 2, 0, 1, 0, 1, 2, 0, 0, 2, 1, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 0, 0, 1, 1, 2, 1, 2, 2, 2, 2, 2, 0, 1, 1, 2, 0, 1, 2, 0, 2, 2, 2, 2, 1, 1, 0, 2, 1, 2, 0, 2, 0, 0, 0, 2, 2, 0, 1, 2, 0, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 1, 2, 1, 2, 1, 2, 1, 1, 0, 1, 0, 1, 0, 2, 1, 2, 1, 2, 0, 0, 0, 2, 0, 0, 2, 2, 1, 0, 0, 2, 2, 0, 2, 0, 0, 1, 0, 1, 2, 1, 1, 1, 2, 1, 2, 0, 2, 0, 2, 2, 2, 2, 0, 1, 2, 0, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 1, 0, 2, 1, 0, 0, 0, 1, 0, 0, 2, 2, 2, 2, 0, 0, 0, 2, 1, 2, 2, 0, 2, 0, 2, 1, 0, 2, 2, 1, 1, 2, 2, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 1, 0, 2, 2, 1, 1, 1, 0, 2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 0, 1, 2, 1, 0, 1, 0, 0, 2, 2, 2, 1, 0, 2, 2, 0, 0, 2, 2, 2, 0, 1, 0, 2, 2, 1, 1, 2, 2, 1, 2, 2, 0, 0, 0, 0, 2, 2, 0, 2, 2, 2, 0, 0, 1, 1, 2, 2, 0, 0, 1, 1, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 2, 2, 1], "post": [2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 0, 2, 2, 2, 1, 2, 0, 2, 2, 2, 1, 2, 0, 0, 1, 2, 0, 2, 0, 2, 2, 2, 1, 1, 0, 2, 1, 0, 0, 0, 2, 2, 2, 2, 2, 0, 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 1, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2, 2, 1, 0, 2, 0, 0, 0, 2, 0, 2, 2, 1, 0, 1, 0, 2, 2, 1, 2, 1, 2, 0, 2, 2, 0, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 2, 2, 2, 0, 1, 1, 2, 2, 0, 0, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1, 2, 2, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 2, 2, 2, 0, 0, 0, 2, 1, 0, 1, 2, 0, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 1, 1, 0, 1, 1, 1, 0, 2, 2, 2, 0, 2, 0, 1, 1, 2, 0, 1, 2, 2, 2, 1, 2, 2, 2, 0, 2, 1, 1, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 2, 2, 2, 0, 2, 2, 1, 2, 1, 0, 2, 2, 2, 2, 2, 2, 2, 1, 0, 2, 0, 2, 0, 0, 1, 1, 2, 1, 0, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 1, 1, 2, 2, 2, 0, 2, 2, 2, 1, 2, 2, 1, 0, 2, 0, 2, 2, 2, 1, 2, 2, 2, 1, 0, 2, 2, 2, 1, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 1, 2, 1, 0, 0, 2, 1, 2, 2, 1, 2, 2, 0, 0, 2, 2, 2, 0, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 0, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 0, 2, 2, 2, 1], "felt_bad": [3, 1, 5, 4, 3, 2, 2, 3, 3, 2, 2, 4, 2, 3, 2, 3, 1, 1, 3, 1, 2, 2, 3, 2, 5, 3, 2, 3, 3, 3, 3, 2, 2, 1, 3, 3, 3, 2, 2, 1, 1, 4, 2, 2, 4, 2, 2, 2, 1, 3, 2, 3, 2, 4, 3, 3, 4, 5, 5, 1, 2, 1, 2, 5, 1, 2, 2, 3, 3, 3, 2, 3, 4, 1, 4, 4, 3, 2, 3, 1, 3, 2, 2, 1, 4, 5, 3, 2, 3, 3, 3, 4, 4, 3, 4, 3, 3, 2, 1, 2, 3, 4, 3, 3, 2, 1, 2, 1, 4, 2, 1, 4, 2, 3, 3, 3, 4, 2, 3, 3, 4, 4, 3, 3, 2, 4, 1, 1, 3, 1, 5, 2, 1, 3, 1, 2, 4, 5, 3, 2, 4, 1, 3, 3, 1, 4, 2, 2, 4, 4, 1, 3, 4, 2, 2, 3, 3, 1, 2, 5, 3, 1, 4, 1, 3, 2, 4, 3, 2, 2, 3, 4, 3, 2, 2, 4, 3, 3, 3, 3, 4, 1, 3, 3, 3, 3, 4, 5, 3, 2, 4, 2, 3, 5, 2, 2, 1, 1, 1, 4, 1, 2, 2, 3, 4, 3, 5, 4, 2, 1, 4, 3, 2, 4, 3, 1, 3, 5, 3, 3, 4, 4, 2, 1, 2, 3, 5, 3, 3, 3, 4, 5, 2, 4, 2, 2, 2, 2, 2, 1, 3, 4, 2, 4, 4, 3, 3, 1, 2, 2, 3, 3, 1, 3, 1, 3, 5, 2, 2, 1, 2, 4, 4, 2, 1, 3, 4, 2, 1, 1, 1, 1, 4, 1, 2, 3, 1, 2, 2, 1, 1, 4, 3, 3, 1, 2, 4, 3, 4, 1, 3, 2, 2, 3, 3, 2, 3, 5, 5, 3, 4, 4, 3, 3, 3, 2, 3, 2, 3, 2, 2, 3, 4, 1, 1, 1, 3, 2, 3, 1, 2, 2, 2, 2, 4, 1, 3, 3, 3, 3, 3, 5, 4, 5, 2, 2, 4, 2, 2, 3, 3, 2, 4, 2, 2, 4, 3, 4, 2, 3, 3, 4, 3, 3, 4, 4, 3, 4, 3, 5, 2, 2, 4, 4, 4, 2, 3, 2, 3, 2, 3, 2, 4, 5, 3, 3, 5, 3, 2, 2, 2, 2, 3, 1, 3, 2, 4, 2, 2, 3, 3, 4, 1, 3, 2, 2, 2, 3, 2, 2, 1, 4, 2, 1, 2, 3, 3, 2, 3, 3, 5, 3], "arch": [2, 3, 1, 2, 2, 0, 3, 0, 0, 2, 3, 1, 0, 0, 0, 1, 3, 0, 0, 0, 0, 0, 3, 1, 2, 1, 0, 1, 2, 0, 2, 0, 2, 0, 1, 3, 2, 2, 3, 0, 0, 2, 1, 2, 2, 3, 3, 0, 3, 1, 0, 3, 0, 1, 1, 0, 3, 3, 1, 3, 2, 0, 0, 1, 1, 3, 2, 1, 1, 1, 3, 2, 2, 3, 3, 2, 2, 0, 3, 1, 0, 1, 3, 0, 1, 1, 3, 0, 3, 3, 0, 1, 0, 1, 1, 0, 3, 2, 0, 2, 2, 1, 1, 0, 1, 0, 3, 0, 3, 0, 0, 1, 2, 0, 3, 3, 0, 0, 3, 2, 3, 2, 0, 2, 2, 1, 0, 0, 2, 0, 1, 1, 0, 0, 3, 3, 3, 1, 2, 3, 3, 0, 0, 3, 2, 2, 2, 2, 2, 2, 0, 2, 0, 0, 3, 0, 2, 0, 2, 1, 0, 0, 2, 0, 2, 3, 2, 2, 0, 2, 3, 1, 3, 2, 2, 0, 1, 1, 0, 2, 2, 0, 0, 3, 2, 1, 1, 3, 2, 2, 2, 2, 2, 3, 1, 0, 0, 0, 1, 1, 0, 2, 0, 3, 1, 1, 1, 0, 3, 0, 1, 0, 1, 2, 3, 0, 3, 1, 1, 1, 2, 0, 3, 0, 0, 0, 1, 2, 3, 3, 1, 1, 0, 3, 2, 3, 1, 3, 3, 0, 2, 1, 0, 2, 2, 2, 3, 0, 0, 2, 0, 0, 0, 3, 0, 3, 2, 1, 0, 0, 0, 2, 3, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 2, 2, 3, 2, 2, 0, 0, 1, 1, 3, 3, 0, 1, 2, 1, 0, 0, 0, 2, 2, 0, 0, 3, 0, 1, 3, 1, 0, 0, 3, 3, 0, 0, 0, 0, 0, 2, 2, 1, 0, 3, 3, 2, 0, 0, 0, 0, 2, 0, 1, 1, 0, 1, 0, 2, 3, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 2, 3, 2, 2, 2, 3, 1, 1, 1, 1, 2, 3, 1, 1, 2, 0, 1, 3, 2, 3, 1, 3, 1, 0, 2, 3, 2, 0, 0, 2, 1, 1, 2, 1, 2, 1, 1, 0, 1, 3, 0, 2, 3, 0, 3, 1, 2, 3, 1, 2, 1, 3, 3, 0, 0, 0, 0, 2, 0, 0, 1, 1, 3, 0, 1, 2, 2, 2, 2, 1, 3], "hc": [5, 1, 3, 5, 5, 5, 1, 4, 4, 5, 4, 3, 4, 4, 3, 6, 2, 0, 5, 2, 6, 7, 3, 4, 6, 5, 3, 5, 5, 2, 6, 4, 2, 2, 4, 0, 3, 7, 0, 3, 1, 4, 7, 2, 3, 2, 1, 4, 1, 5, 6, 1, 4, 3, 7, 6, 3, 2, 4, 3, 3, 6, 5, 2, 6, 2, 6, 4, 5, 3, 2, 5, 2, 0, 0, 4, 4, 3, 0, 6, 5, 4, 3, 2, 2, 3, 1, 6, 0, 3, 6, 2, 4, 4, 2, 5, 4, 4, 4, 6, 5, 2, 5, 5, 3, 2, 2, 3, 0, 5, 4, 6, 2, 6, 2, 0, 0, 2, 0, 3, 3, 7, 4, 8, 6, 4, 3, 3, 5, 1, 2, 7, 5, 4, 4, 0, 2, 5, 4, 2, 2, 2, 5, 5, 4, 3, 6, 3, 2, 7, 2, 3, 7, 1, 0, 8, 5, 3, 7, 8, 5, 3, 7, 2, 7, 3, 4, 8, 6, 6, 4, 6, 0, 7, 4, 5, 6, 4, 4, 4, 5, 2, 3, 1, 5, 1, 4, 1, 5, 6, 1, 5, 5, 2, 6, 2, 6, 5, 2, 2, 2, 8, 7, 1, 5, 4, 7, 6, 3, 1, 3, 4, 5, 7, 4, 7, 1, 5, 3, 4, 5, 3, 1, 6, 6, 3, 2, 6, 1, 0, 3, 8, 2, 0, 6, 2, 6, 3, 3, 2, 7, 2, 5, 3, 4, 3, 2, 2, 6, 5, 5, 3, 6, 2, 5, 6, 4, 2, 6, 6, 5, 7, 4, 5, 8, 1, 5, 5, 3, 5, 5, 3, 4, 5, 1, 4, 3, 6, 7, 1, 3, 4, 3, 1, 1, 4, 4, 3, 1, 6, 2, 4, 3, 6, 6, 3, 4, 5, 4, 0, 8, 4, 3, 5, 1, 6, 8, 8, 2, 5, 1, 5, 1, 3, 0, 1, 4, 4, 5, 3, 4, 5, 4, 2, 1, 6, 4, 3, 6, 2, 0, 5, 6, 4, 7, 3, 6, 7, 1, 0, 7, 4, 1, 6, 5, 2, 3, 2, 0, 0, 4, 6, 5, 5, 4, 4, 5, 3, 0, 5, 5, 7, 3, 3, 3, 4, 3, 5, 4, 5, 5, 5, 5, 7, 4, 6, 5, 6, 3, 6, 0, 2, 5, 1, 8, 3, 1, 6, 3, 7, 5, 0, 0, 2, 3, 4, 4, 7, 4, 6, 5, 5, 6, 1, 3, 3, 6, 2, 6, 6, 3, 1], "pc1": [2.65, -0.68, -0.26, 1.62, 2.04, 0.2, -1.64, -0.16, -0.62, 0.72, -2.15, 0.35, 0.35, 0.87, 1.72, -0.43, -1.39, 0.05, 1.28, 0.59, 0.31, 1.28, -2.06, 0.55, 0.97, 0.13, 0.98, -1.06, 0.22, 0.33, 0.85, 1.32, 0.76, 1.05, -0.87, -0.92, 2.17, 0.77, -2.48, 0.72, 0.66, 0.2, -0.29, 0.66, 1.65, -2.01, -2.09, 1.82, -4.15, 0.1, 0.74, -0.91, 0.2, -0.88, 1.06, -0.4, -1.99, -2.28, 0.06, -1.89, 2.11, -1.22, -0.32, -0.59, -1.06, -1.29, 1.0, -0.87, 0.45, -1.01, -2.29, 1.49, 0.37, -2.07, -0.96, 0.87, 0.95, -0.58, -2.56, 0.71, -0.25, -0.98, -1.66, 0.16, -0.04, -1.52, -2.09, 1.27, -2.7, -0.91, 1.21, -1.08, 0.05, -1.01, 0.48, 0.75, -1.72, 0.46, 0.23, 1.97, 1.01, 0.7, 0.72, 0.8, 0.07, 0.48, -1.37, 0.03, -2.48, 0.14, -0.05, 0.62, 1.37, -0.07, -1.85, -3.33, -0.36, -0.28, -2.61, 1.69, -1.38, 1.73, 0.88, 1.44, 1.12, -0.4, 0.43, 0.46, 1.11, 0.08, -0.86, 1.02, 0.23, 0.43, -1.38, -2.04, -2.0, 0.5, 1.06, -2.19, -1.23, 0.87, 0.8, -1.8, 0.81, 0.82, 1.05, 1.18, 1.13, 2.01, 0.56, 1.08, 1.92, -1.23, -3.17, 1.16, 0.73, -0.33, 2.03, 0.09, 0.3, 0.35, 1.47, -0.1, 1.88, -1.21, -0.32, 1.78, 0.28, 1.56, -2.35, -1.25, -2.14, 2.2, 1.14, 0.79, 0.59, 0.47, 0.47, 1.49, 0.7, -0.03, 0.53, -1.62, 0.8, -0.28, -0.56, -3.27, 0.86, 1.39, 1.08, 1.12, 1.64, -1.65, 0.45, -0.89, -0.27, -0.14, 0.48, 0.92, -0.06, 1.33, 0.51, -2.04, -0.18, 0.77, 0.8, 0.59, -1.74, -0.65, -0.39, 0.48, 0.63, 1.47, -1.61, 0.36, -2.82, 1.02, -0.24, -0.82, 0.45, -0.59, -1.87, 0.79, 0.47, 0.07, 0.27, 1.91, -2.4, -3.07, 0.06, -0.06, 0.87, -1.65, 2.47, -3.19, 0.12, -1.04, -1.39, 0.16, 2.08, -0.49, 1.71, 0.74, 0.21, 1.44, -2.25, -1.3, 0.12, 1.28, 1.1, -0.91, -0.6, -1.27, -0.29, -2.76, -0.1, -0.88, 1.56, -0.08, -0.4, 0.54, -1.12, 0.78, 0.52, 0.59, 0.73, 0.96, -1.66, -0.6, 1.07, 0.5, 1.33, -0.0, 0.86, 0.18, -1.79, 2.42, 0.19, -0.94, 0.09, -0.19, -1.05, -1.36, -3.18, -0.43, 0.17, 0.67, -0.83, -0.41, 0.33, 0.75, 0.4, 1.36, 0.88, 0.62, -1.79, 0.22, 1.02, -1.68, 1.13, 0.42, 0.45, -0.89, -1.67, 0.86, 1.35, 1.53, -0.05, 0.19, 1.02, 1.2, 0.38, 0.86, -3.06, -1.96, 2.24, -0.15, 1.27, -0.27, 0.12, 0.99, 1.32, -0.38, -0.18, 0.28, -0.12, 0.11, 1.59, -1.74, -0.37, 1.41, 0.98, -0.2, 1.27, 0.09, 0.85, 0.41, 1.26, 1.57, 1.23, 1.62, -2.18, 0.85, 2.22, 1.65, -2.05, -0.95, -1.09, 0.27, -0.43, 2.38, -0.95, 0.62, -0.62, 0.71, 0.21, -0.52, -2.55, 1.07, -1.2, 0.18, -2.02, -0.3, 0.12, 0.89, -2.64, 0.67, -0.19, 1.29, 2.48, -0.55, -0.25, 2.39, -1.54, 1.31, -0.62, -1.06, 0.03, 0.79, -1.73, 1.16, 2.33, -1.2, -0.87, -1.52, -1.48, 0.7, -0.78, 0.5, 0.34, 0.61, -3.34, -3.01, -0.64, 0.66, 1.51, 0.93, 1.28, -0.85, -0.14, 0.52, -0.08, -1.38, 0.16, -0.38, 1.19, 0.75, 1.41, 2.34, 0.91, -2.89], "pc2": [-1.28, -0.36, -0.37, 0.04, -1.27, 0.59, 0.04, 0.83, 2.05, -0.37, 0.52, -2.07, 0.38, 0.33, 1.25, -1.42, 0.23, 1.52, 1.15, 1.86, 0.74, 0.68, 1.35, -0.07, -0.99, -1.7, 2.62, -1.4, -0.01, 0.36, 0.12, 0.57, -0.33, 1.02, -1.02, 0.48, -0.6, -1.22, 1.2, 1.66, 2.06, -1.05, -0.79, -0.55, -1.12, -1.07, 1.06, 1.09, -0.42, -0.69, 0.39, -0.07, 0.41, -1.89, -2.02, 1.09, -0.46, 0.05, -1.5, 1.18, -0.28, 1.69, 1.89, -1.71, 0.4, 1.13, -0.88, -2.0, -2.1, -1.51, 0.2, 0.43, -1.69, -0.02, 0.61, -1.48, -1.07, 2.1, 0.19, -0.13, 1.02, -0.18, 0.66, 1.89, -0.86, -0.71, 0.03, 1.49, 0.27, 0.65, 1.86, -0.67, 0.78, -0.81, -2.34, 0.36, -1.18, -1.57, 1.55, -1.97, -1.14, -2.04, -0.11, 1.64, -1.0, 1.84, -1.18, 1.42, 0.03, 0.42, 2.04, -0.34, 0.37, 0.77, -0.31, 0.31, 0.36, 0.37, -1.33, -0.09, 0.03, -0.86, 0.98, 0.29, -0.89, 0.09, 1.49, 1.76, -1.11, 2.86, -0.38, -0.86, 1.24, 1.81, -1.49, -0.65, -1.71, -1.02, -0.69, 0.6, 0.65, 1.51, 0.45, 0.89, -0.64, -0.77, -1.95, -0.65, -0.68, -0.49, 2.56, -1.55, 0.87, 1.95, -0.17, 0.33, -0.91, 1.79, 0.14, -0.64, 0.79, 1.22, -0.48, 1.14, -1.5, 0.16, -0.44, -0.88, 0.82, 0.41, -0.36, -1.74, -1.15, 0.29, -0.34, 0.38, -1.02, -0.93, 1.04, 0.1, -1.23, 1.98, 0.66, 0.98, -1.56, -1.55, -1.28, -1.14, -1.12, -1.15, -1.44, -1.43, 0.32, -0.03, -0.31, 1.2, 1.86, 1.25, -1.65, -1.53, 2.19, -0.35, 1.11, 0.59, -1.34, -1.67, -2.61, 0.48, -1.6, 2.07, -1.03, 1.62, -0.93, -1.22, 0.19, 0.8, -0.42, -0.96, -1.82, -0.69, -1.73, 0.85, -0.52, 1.44, 0.49, 0.85, -1.45, -0.19, -0.81, 0.05, -1.5, -0.02, 0.99, -1.36, -1.38, 0.08, -1.41, 0.59, -0.25, 2.18, -0.53, -0.6, 0.45, -1.49, -1.19, 0.43, 0.28, 1.58, 1.2, -0.1, 1.1, 0.78, 0.78, -0.16, 2.77, -1.95, -1.3, -1.35, 0.88, 0.61, 2.06, -0.44, -1.56, 0.44, 1.97, 1.33, 0.27, 2.37, 0.52, 0.83, 1.14, 1.03, 0.64, 1.55, 0.21, -1.25, -0.27, -0.02, -0.26, 1.49, 1.77, -0.19, -0.7, 1.16, 0.19, 0.55, -1.58, -0.96, -1.5, 1.33, 1.56, 1.0, -1.7, -0.5, 0.52, 1.47, -1.6, 1.4, -1.24, -0.61, -0.8, 1.7, 1.24, 0.05, -0.16, 2.28, 0.84, 1.3, 0.46, 0.51, -1.97, -2.04, 0.03, 0.52, 0.95, -0.21, -1.39, 2.28, 1.59, 1.42, 3.36, -0.19, 2.09, -1.13, -0.62, 1.48, -0.56, 0.38, -0.65, 0.65, 1.15, -1.19, -1.36, -0.71, 1.37, 2.45, 1.22, 0.41, 1.73, 1.68, 0.7, -0.17, -1.31, -0.66, -1.0, -0.66, 0.51, -1.64, -0.44, -0.65, -0.29, -0.65, 0.52, -1.25, -1.79, -0.95, 0.99, -0.8, -0.51, -1.31, 0.76, -0.92, -1.35, -0.88, 1.06, -1.35, -0.13, -1.05, 1.85, 1.5, -0.5, 0.07, -0.57, -1.46, -1.7, -0.43, -1.63, -1.0, 1.1, 0.1, -0.18, 1.1, 0.63, 0.85, 0.72, -0.31, -1.52, -1.07, 0.34, -1.57, -1.78, -0.05, -0.08, -0.69, 0.72, 0.65, 1.0, 1.34, -2.86, 1.19, 2.06, -2.5, 0.2, 1.25, 0.76, -0.49, 0.12, -1.19, 0.26, 0.09, -1.61, -0.93], "pss": [26, 14, 10, 22, 24, 18, 27, 9, 18, 21, 9, 34, 21, 12, 8, 32, 29, 3, 10, 10, 13, 24, 20, 23, 17, 23, 13, 20, 21, 10, 23, 17, 14, 22, 16, 19, 19, 16, 23, 10, 17, 25, 26, 12, 15, 25, 16, 27, 27, 28, 16, 23, 25, 27, 24, 24, 30, 29, 26, 14, 23, 29, 15, 26, 15, 19, 26, 20, 18, 21, 19, 14, 17, 17, 14, 28, 23, 24, 21, 13, 7, 15, 18, 8, 27, 29, 21, 11, 23, 24, 11, 14, 23, 31, 23, 21, 29, 30, 23, 6, 27, 22, 18, 22, 20, 13, 19, 8, 28, 22, 8, 16, 19, 9, 19, 24, 15, 23, 21, 16, 22, 24, 11, 14, 12, 14, 12, 11, 20, 20, 16, 11, 4, 15, 15, 7, 25, 26, 22, 22, 15, 8, 15, 17, 9, 20, 13, 32, 32, 28, 21, 17, 19, 17, 25, 22, 15, 15, 21, 19, 18, 11, 24, 15, 23, 21, 23, 9, 21, 20, 31, 27, 25, 26, 25, 23, 18, 23, 7, 19, 18, 6, 9, 16, 12, 14, 26, 28, 19, 15, 27, 16, 17, 20, 19, 20, 16, 26, 15, 9, 16, 15, 33, 6, 18, 19, 32, 17, 11, 11, 29, 7, 26, 26, 24, 7, 20, 29, 16, 28, 18, 27, 18, 23, 16, 10, 22, 17, 22, 29, 23, 15, 10, 29, 10, 20, 11, 20, 22, 21, 19, 17, 18, 27, 25, 20, 31, 16, 15, 12, 25, 21, 25, 9, 22, 38, 24, 26, 11, 18, 17, 30, 34, 12, 7, 11, 18, 14, 26, 6, 19, 20, 18, 9, 7, 16, 14, 23, 23, 22, 13, 14, 26, 22, 19, 25, 14, 14, 31, 13, 18, 12, 22, 22, 24, 14, 21, 23, 33, 24, 28, 17, 24, 14, 20, 19, 20, 13, 6, 8, 14, 29, 18, 3, 24, 13, 16, 20, 16, 13, 6, 19, 7, 18, 9, 22, 23, 7, 15, 32, 20, 23, 25, 10, 8, 12, 6, 24, 12, 3, 24, 19, 30, 31, 25, 23, 22, 18, 21, 12, 26, 27, 7, 16, 27, 21, 12, 18, 23, 21, 11, 16, 21, 19, 19, 14, 31, 25, 23, 8, 20, 23, 16, 22, 23, 4, 26, 28, 11, 20, 28, 20, 22, 19, 13, 11, 24, 24, 18, 18, 26, 26, 14, 21, 21, 28, 16, 29, 25, 27, 9, 18, 21, 19, 7, 12, 13, 24, 17, 16, 26, 26], "who5": [52, 64, 56, 56, 60, 44, 44, 68, 76, 48, 92, 24, 64, 48, 64, 40, 40, 64, 68, 56, 60, 84, 8, 48, 32, 28, 52, 40, 24, 76, 52, 68, 52, 64, 36, 52, 48, 48, 52, 60, 80, 36, 44, 56, 36, 16, 72, 48, 12, 40, 76, 36, 56, 28, 36, 40, 20, 16, 40, 56, 72, 64, 40, 8, 52, 60, 48, 32, 72, 40, 36, 76, 64, 60, 40, 44, 40, 64, 52, 60, 52, 60, 44, 60, 24, 12, 44, 40, 32, 44, 88, 20, 56, 44, 32, 44, 20, 40, 48, 80, 20, 48, 68, 56, 52, 76, 68, 100, 16, 44, 68, 52, 68, 76, 76, 48, 44, 28, 56, 68, 36, 40, 76, 68, 56, 40, 76, 72, 40, 80, 32, 44, 68, 80, 60, 48, 12, 32, 60, 52, 40, 84, 36, 60, 48, 40, 80, 64, 28, 64, 64, 48, 80, 68, 28, 64, 52, 76, 48, 40, 68, 72, 40, 60, 32, 44, 68, 92, 68, 76, 36, 36, 12, 60, 44, 72, 48, 36, 72, 64, 48, 80, 24, 44, 68, 36, 32, 28, 60, 56, 48, 44, 76, 60, 40, 52, 56, 80, 60, 68, 76, 52, 52, 64, 28, 52, 44, 68, 72, 84, 28, 36, 20, 20, 32, 84, 36, 48, 32, 52, 44, 48, 40, 72, 60, 72, 24, 52, 32, 52, 16, 28, 60, 48, 48, 52, 72, 48, 48, 60, 60, 52, 68, 52, 60, 44, 12, 80, 52, 92, 52, 52, 44, 80, 28, 0, 60, 0, 80, 60, 56, 16, 8, 40, 60, 76, 56, 68, 28, 76, 68, 64, 56, 68, 68, 56, 52, 64, 44, 60, 72, 36, 40, 44, 52, 40, 40, 64, 12, 52, 40, 48, 52, 56, 52, 72, 48, 36, 36, 16, 32, 40, 64, 48, 44, 60, 36, 60, 60, 64, 44, 24, 56, 72, 52, 64, 76, 40, 56, 68, 76, 64, 52, 48, 48, 76, 36, 56, 76, 48, 32, 60, 36, 40, 68, 52, 76, 28, 56, 64, 76, 72, 8, 52, 52, 40, 52, 60, 44, 64, 40, 56, 76, 16, 24, 20, 76, 56, 16, 76, 48, 56, 48, 44, 40, 52, 52, 36, 44, 68, 36, 28, 32, 44, 52, 76, 8, 36, 56, 48, 56, 64, 68, 68, 40, 80, 32, 44, 60, 60, 52, 40, 40, 36, 68, 64, 64, 48, 36, 72, 84, 20, 44, 24, 56, 76, 60, 56, 32, 52, 32, 12], "se": [39, 35, 38, 40, 36, 39, 34, 35, 43, 37, 38, 24, 41, 43, 48, 23, 30, 43, 45, 47, 42, 45, 32, 38, 32, 27, 51, 28, 36, 35, 35, 44, 38, 39, 22, 30, 37, 33, 32, 45, 44, 31, 38, 35, 31, 25, 31, 47, 10, 30, 41, 29, 40, 18, 26, 38, 28, 26, 33, 36, 43, 35, 45, 28, 29, 34, 33, 30, 38, 16, 26, 41, 31, 29, 28, 33, 37, 39, 24, 34, 38, 28, 27, 42, 30, 26, 22, 46, 19, 35, 52, 34, 36, 27, 24, 42, 22, 29, 41, 36, 34, 30, 33, 44, 36, 49, 27, 34, 28, 44, 47, 39, 40, 43, 26, 23, 35, 34, 24, 40, 26, 37, 43, 40, 32, 35, 47, 50, 39, 47, 33, 38, 42, 45, 22, 31, 22, 33, 35, 30, 34, 44, 38, 33, 36, 38, 30, 40, 38, 44, 47, 36, 47, 37, 18, 45, 32, 37, 47, 32, 40, 50, 43, 41, 38, 22, 33, 45, 39, 43, 28, 21, 22, 46, 39, 36, 31, 32, 41, 36, 35, 40, 43, 34, 32, 29, 24, 25, 34, 36, 35, 38, 41, 27, 36, 38, 38, 34, 36, 28, 40, 35, 39, 32, 25, 32, 26, 40, 18, 50, 32, 45, 39, 35, 28, 42, 27, 36, 23, 26, 27, 35, 27, 50, 40, 40, 33, 44, 28, 25, 24, 34, 41, 26, 40, 24, 35, 33, 26, 47, 43, 29, 50, 31, 29, 39, 29, 35, 36, 42, 46, 35, 32, 28, 43, 15, 38, 20, 48, 37, 40, 39, 27, 44, 53, 44, 38, 51, 31, 39, 46, 46, 47, 47, 39, 30, 34, 47, 36, 42, 45, 37, 23, 35, 19, 29, 21, 34, 28, 39, 45, 42, 35, 37, 46, 47, 21, 47, 33, 30, 33, 46, 45, 37, 29, 52, 48, 50, 45, 42, 36, 29, 36, 42, 27, 32, 42, 42, 48, 48, 53, 36, 51, 26, 35, 42, 33, 40, 45, 30, 41, 34, 35, 36, 48, 46, 45, 44, 46, 50, 46, 40, 12, 39, 39, 41, 26, 23, 24, 34, 35, 46, 35, 27, 28, 38, 40, 27, 22, 33, 43, 28, 26, 33, 39, 32, 25, 30, 45, 46, 48, 35, 31, 42, 20, 32, 28, 26, 40, 39, 28, 48, 44, 35, 38, 25, 35, 31, 35, 27, 26, 39, 22, 17, 33, 48, 51, 40, 25, 41, 46, 28, 35, 40, 47, 23, 38, 32, 44, 48, 35, 25], "sd": [36, 25, 36, 27, 37, 31, 21, 24, 19, 32, 23, 42, 31, 32, 21, 33, 26, 20, 25, 18, 24, 24, 17, 37, 36, 36, 20, 34, 24, 23, 25, 27, 33, 22, 27, 22, 31, 36, 15, 21, 11, 30, 38, 32, 28, 29, 15, 24, 17, 38, 27, 22, 29, 34, 44, 22, 28, 23, 44, 22, 26, 14, 16, 38, 27, 19, 34, 44, 48, 36, 17, 26, 35, 20, 18, 39, 37, 13, 19, 31, 21, 32, 20, 19, 32, 34, 16, 25, 13, 22, 21, 36, 22, 32, 43, 33, 26, 33, 20, 41, 35, 45, 34, 18, 36, 24, 31, 18, 14, 27, 17, 39, 25, 31, 23, 17, 26, 19, 33, 30, 21, 33, 26, 29, 34, 33, 25, 26, 36, 12, 31, 40, 20, 17, 28, 29, 32, 42, 34, 24, 19, 21, 28, 23, 28, 34, 40, 29, 37, 35, 10, 36, 28, 10, 20, 39, 33, 16, 30, 34, 21, 26, 37, 21, 42, 19, 26, 38, 26, 26, 28, 32, 28, 30, 26, 27, 42, 39, 18, 27, 34, 18, 26, 21, 34, 40, 31, 36, 35, 41, 41, 41, 24, 19, 33, 20, 16, 20, 41, 38, 15, 35, 23, 19, 34, 49, 47, 31, 29, 17, 35, 25, 40, 37, 24, 22, 23, 43, 37, 36, 30, 21, 27, 23, 29, 27, 42, 33, 31, 20, 33, 37, 22, 27, 37, 21, 42, 19, 26, 17, 38, 34, 39, 37, 32, 19, 23, 17, 12, 35, 27, 25, 18, 25, 9, 33, 35, 36, 28, 29, 13, 31, 32, 28, 24, 19, 23, 21, 27, 26, 25, 28, 30, 23, 26, 30, 34, 27, 25, 24, 23, 28, 28, 16, 16, 26, 32, 35, 38, 20, 23, 22, 32, 34, 33, 28, 34, 26, 40, 30, 38, 23, 23, 27, 22, 17, 30, 29, 22, 26, 35, 41, 30, 25, 14, 26, 41, 17, 22, 24, 15, 32, 17, 28, 33, 17, 36, 29, 35, 22, 23, 39, 34, 35, 22, 15, 23, 25, 21, 20, 30, 27, 29, 32, 34, 37, 19, 41, 28, 32, 31, 38, 21, 41, 38, 37, 26, 32, 23, 35, 26, 33, 36, 35, 26, 38, 24, 34, 22, 19, 40, 32, 34, 40, 39, 27, 37, 34, 25, 38, 23, 23, 20, 19, 28, 25, 44, 34, 27, 41, 34, 36, 22, 21, 27, 29, 31, 24, 44, 24, 16, 46, 30, 16, 25, 31, 26, 30, 29, 32, 43, 27], "after": [2.75, 2.0, 2.5, 2.5, 3.75, 2.75, 1.75, 2.5, 2.75, 2.75, 3.25, 4.25, 1.75, 2.5, 2.5, 2.75, 2.5, 1.0, 2.5, 1.75, 3.0, 3.5, 2.75, 3.0, 4.0, 4.25, 2.75, 3.0, 3.25, 2.75, 2.5, 2.25, 1.75, 2.75, 3.0, 2.75, 3.0, 3.25, 2.5, 1.25, 1.0, 3.0, 2.5, 2.75, 4.25, 3.0, 1.5, 2.5, 2.75, 4.0, 2.5, 2.5, 3.0, 4.0, 3.0, 3.25, 4.0, 4.0, 4.5, 1.5, 2.0, 1.5, 2.75, 4.75, 2.25, 2.25, 2.75, 2.25, 4.0, 4.5, 1.75, 2.5, 3.75, 1.5, 2.75, 3.75, 3.25, 2.75, 3.25, 1.25, 2.75, 2.5, 3.0, 2.0, 4.25, 4.25, 2.75, 2.0, 3.0, 2.75, 2.25, 2.5, 4.0, 3.75, 3.75, 2.0, 3.0, 3.5, 2.0, 2.75, 3.25, 4.0, 3.0, 2.5, 2.75, 1.75, 3.5, 1.25, 4.0, 2.75, 1.5, 3.5, 3.25, 2.25, 2.75, 2.0, 3.0, 2.25, 3.75, 3.25, 3.25, 2.75, 3.25, 2.25, 2.0, 3.75, 2.25, 2.0, 3.75, 1.25, 4.0, 2.0, 2.0, 2.75, 2.5, 3.25, 4.0, 4.25, 3.0, 2.25, 3.25, 1.5, 3.0, 3.0, 3.0, 3.75, 1.5, 3.25, 3.0, 2.5, 1.5, 3.0, 3.0, 2.25, 1.5, 3.25, 2.5, 2.0, 3.5, 3.25, 2.5, 1.75, 3.0, 2.0, 3.0, 2.75, 3.25, 2.5, 2.5, 2.0, 3.25, 3.25, 2.25, 2.0, 2.5, 3.5, 3.5, 2.5, 3.25, 3.75, 3.25, 1.25, 3.5, 2.5, 3.0, 2.25, 3.25, 4.75, 2.5, 3.0, 3.25, 3.0, 3.25, 3.5, 2.5, 2.5, 1.25, 2.0, 2.0, 3.0, 1.75, 2.5, 2.5, 3.25, 4.25, 3.0, 4.5, 4.25, 2.75, 2.5, 3.25, 3.5, 2.5, 4.0, 3.5, 1.25, 2.75, 3.75, 4.0, 3.75, 4.0, 3.25, 2.25, 2.5, 2.5, 1.5, 4.75, 3.5, 4.0, 3.25, 3.25, 4.25, 2.5, 3.0, 2.5, 2.5, 2.75, 3.0, 2.5, 1.0, 3.0, 3.25, 2.5, 3.75, 3.75, 3.0, 3.0, 1.0, 3.25, 2.0, 2.5, 2.75, 1.75, 2.25, 1.75, 3.0, 3.0, 2.75, 2.5, 2.0, 2.25, 3.0, 4.5, 2.75, 2.0, 2.5, 2.25, 3.0, 2.25, 2.75, 1.75, 2.5, 3.75, 2.0, 1.75, 2.5, 2.0, 2.5, 3.25, 1.0, 2.25, 2.75, 3.0, 2.25, 1.25, 2.0, 3.25, 2.75, 3.75, 1.75, 3.25, 2.5, 2.5, 2.5, 2.5, 1.75, 3.25, 3.5, 5.0, 3.25, 4.0, 2.75, 2.25, 3.75, 3.0, 2.5, 3.5, 2.25, 2.25, 2.25, 2.75, 3.25, 3.0, 1.25, 1.75, 1.75, 2.75, 1.5, 2.25, 1.25, 1.25, 2.75, 2.75, 2.25, 3.25, 2.25, 4.5, 3.25, 2.5, 2.25, 3.25, 4.5, 3.0, 3.5, 1.5, 1.25, 3.75, 2.5, 2.0, 3.25, 3.75, 2.25, 3.25, 3.0, 2.0, 4.5, 2.75, 3.25, 2.5, 2.75, 3.0, 3.5, 2.5, 3.5, 4.5, 3.75, 2.25, 3.75, 3.5, 3.75, 1.5, 2.75, 3.5, 3.25, 3.25, 2.5, 3.25, 3.0, 2.25, 1.75, 3.0, 2.5, 2.75, 3.5, 3.0, 3.25, 4.25, 4.25, 2.75, 3.25, 3.0, 2.5, 3.0, 2.0, 2.75, 2.5, 4.0, 3.0, 3.0, 4.25, 3.0, 3.5, 3.0, 3.0, 2.0, 2.5, 2.5, 3.5, 3.5, 2.25, 2.25, 3.5, 2.5, 2.5, 2.75, 3.5, 2.5, 3.0, 2.5, 3.0, 3.5, 3.5]}, "gd": {"b0": 1.381, "b1": 0.0508, "r": 0.5138, "r2": 0.264, "p": 0.0, "x_mean": 28.3155, "x_sd": 7.9258, "y_mean": 2.8192, "y_sd": 0.7835}, "density": {"grid": [8.0, 8.8, 9.6, 10.4, 11.2, 12.0, 12.8, 13.6, 14.4, 15.2, 16.0, 16.8, 17.6, 18.4, 19.2, 20.0, 20.8, 21.6, 22.4, 23.2, 24.0, 24.8, 25.6, 26.4, 27.2, 28.0, 28.8, 29.6, 30.4, 31.2, 32.0, 32.8, 33.6, 34.4, 35.2, 36.0, 36.8, 37.6, 38.4, 39.2, 40.0, 40.8, 41.6, 42.4, 43.2, 44.0, 44.8, 45.6, 46.4, 47.2, 48.0, 48.8, 49.6, 50.4, 51.2, 52.0, 52.8, 53.6, 54.4, 55.2, 56.0], "af": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0001, 0.0001, 0.0003, 0.0006, 0.001, 0.0015, 0.0021, 0.0028, 0.0037, 0.0047, 0.0059, 0.0073, 0.0087, 0.0102, 0.0117, 0.0132, 0.0147, 0.0161, 0.0172, 0.018, 0.0184, 0.0188, 0.0193, 0.0204, 0.0223, 0.0248, 0.0278, 0.0309, 0.0341, 0.0372, 0.0404, 0.0436, 0.0467, 0.0496, 0.0522, 0.0545, 0.0565, 0.0583, 0.0594, 0.0595, 0.0582, 0.055, 0.05, 0.0435, 0.0361, 0.0286, 0.0216, 0.0156, 0.0108, 0.007], "se": [0.0004, 0.0005, 0.0007, 0.0008, 0.001, 0.0011, 0.0013, 0.0015, 0.0019, 0.0024, 0.0031, 0.0039, 0.0048, 0.006, 0.0074, 0.0091, 0.0111, 0.0134, 0.0158, 0.0184, 0.0211, 0.0237, 0.0261, 0.0282, 0.0297, 0.0309, 0.0317, 0.0326, 0.0338, 0.0355, 0.0377, 0.0401, 0.0423, 0.0441, 0.0451, 0.0454, 0.045, 0.0441, 0.0429, 0.0413, 0.0396, 0.0377, 0.0359, 0.0344, 0.0331, 0.0319, 0.0307, 0.0292, 0.0272, 0.0246, 0.0215, 0.0183, 0.0151, 0.0122, 0.0096, 0.0073, 0.0054, 0.0038, 0.0026, 0.0016, 0.001], "ag": [0.0009, 0.0016, 0.0025, 0.0038, 0.0053, 0.0073, 0.0096, 0.0123, 0.0154, 0.0188, 0.0225, 0.0263, 0.03, 0.0336, 0.0368, 0.0395, 0.0416, 0.043, 0.0437, 0.0438, 0.0434, 0.0426, 0.0416, 0.0406, 0.0396, 0.0388, 0.0382, 0.0377, 0.0372, 0.0367, 0.0361, 0.0355, 0.0346, 0.0333, 0.0315, 0.0291, 0.0264, 0.0237, 0.021, 0.0187, 0.0167, 0.0149, 0.0133, 0.0118, 0.0104, 0.0091, 0.008, 0.0071, 0.0063, 0.0056, 0.005, 0.0043, 0.0035, 0.0028, 0.0021, 0.0014, 0.0009, 0.0006, 0.0003, 0.0002, 0.0001], "sd": [0.0016, 0.0022, 0.003, 0.0039, 0.005, 0.0064, 0.0082, 0.0103, 0.0129, 0.0158, 0.0188, 0.022, 0.0251, 0.0281, 0.0309, 0.0336, 0.036, 0.0382, 0.04, 0.0415, 0.0426, 0.0433, 0.0435, 0.0432, 0.0423, 0.041, 0.0398, 0.0388, 0.0384, 0.0385, 0.0389, 0.0392, 0.0391, 0.0384, 0.0368, 0.0346, 0.0319, 0.029, 0.026, 0.0232, 0.0205, 0.0181, 0.0157, 0.0134, 0.0111, 0.009, 0.0071, 0.0055, 0.0042, 0.0032, 0.0024, 0.0018, 0.0013, 0.0009, 0.0006, 0.0004, 0.0002, 0.0001, 0.0, 0.0, 0.0]}};</script>
+<script>
+(function(){
+const D = DATA, P = D.prevalence, Q = D.quiz, PE = D.people, NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+function S(tag, a, parent){ const e = document.createElementNS(NS, tag); for (const k in a){ if (k === 'text') e.textContent = a[k]; else e.setAttribute(k, a[k]); } if (parent) parent.appendChild(e); return e; }
+function H(tag, cls, text, parent){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; if (parent) parent.appendChild(e); return e; }
+const svg = (el, w, h) => { el.textContent = ''; return S('svg', {viewBox:`0 0 ${w} ${h}`, role:'img'}, el); };
+const lin = (d0,d1,r0,r1) => v => r0 + (v-d0)/(d1-d0)*(r1-r0);
+const pct = (p,d=0) => (100*p).toFixed(d) + '%';
+const dot = (w, x) => w.reduce((s, v, i) => s + v * x[i], 0);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const AC = ['var(--blue)','var(--red)','var(--yellow)','var(--green)'];
+const tip = $('#tip');
+function showTip(ev, build){ tip.textContent = ''; build(tip); tip.style.left = clamp(ev.clientX, 140, innerWidth - 140) + 'px'; tip.style.top = Math.max(ev.clientY, 90) + 'px'; tip.style.opacity = 1; }
+const hideTip = () => { tip.style.opacity = 0; };
+function mark(parent, shape, x, y, r, fill, extra){ const a = Object.assign({fill}, extra || {});
+  if (shape === 0) return S('circle', Object.assign({cx:x, cy:y, r}, a), parent);
+  if (shape === 1) return S('rect', Object.assign({x:x - r*.9, y:y - r*.9, width:r*1.8, height:r*1.8, rx:1}, a), parent);
+  if (shape === 2) return S('path', Object.assign({d:`M${x},${y - r*1.15} L${x + r*1.1},${y + r*.85} L${x - r*1.1},${y + r*.85} z`}, a), parent);
+  return S('path', Object.assign({d:`M${x},${y - r*1.25} L${x + r*1.25},${y} L${x},${y + r*1.25} L${x - r*1.25},${y} z`}, a), parent); }
+
+/* ---------- tabs ---------- */
+const inits = {}, started = {};
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x === b));
+  document.querySelectorAll('section.tab').forEach(s => s.classList.toggle('on', s.id === 'tab-' + b.dataset.tab));
+  if (!started[b.dataset.tab] && inits[b.dataset.tab]) { started[b.dataset.tab] = true; inits[b.dataset.tab](); }
+}));
+
+/* =====================================================================  QUIZ  */
+const LIKERT = ['Strongly disagree','Disagree','Neutral','Agree','Strongly agree'];
+const AWARE = ['Yes','Not sure','No'];
+const state = { step:-1, aware:null, ans:Array(Q.items.length).fill(null) };
+const quizEl = $('#quiz'), resEl = $('#result');
+
+function renderQuiz(){
+  quizEl.hidden = false; resEl.hidden = true; quizEl.textContent = '';
+  const card = H('div', 'card', null, quizEl), n = Q.items.length;
+  if (state.step === -1){
+    H('h2', null, 'Are you a hidden coper?', card);
+    H('p', 'lead', `${n} statements, about 60 seconds. Your answers run through models trained on ${D.sample.n} survey responses and come back as a humor profile: how much you lean on humor, whether it is working for you, and whether you already knew.`, card);
+    const row = H('div', null, null, card); row.style.cssText = 'display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:18px';
+    const go = H('button', 'btn', 'Start', row); go.onclick = () => { state.step = 0; renderQuiz(); };
+    const s1 = H('button', 'link', 'See a sample result', row); s1.onclick = () => { state.aware = 'No'; state.ans = [4,5,2,3,5,5,5,5,2,3]; showResult(true); };
+    H('p', 'tiny', 'Educational demo. This is not a diagnostic tool.', card).style.marginTop = '18px';
+    return;
+  }
+  const bar = H('div', 'progress', null, card), fill = H('i', null, null, bar); fill.style.width = (100 * (state.step) / (n + 1)) + '%';
+  if (state.step === 0){
+    H('div', 'qnum', 'First, a gut answer', card);
+    H('div', 'qtext', 'Would you say you use humor to cope with stress?', card);
+    const g = H('div', 'three', null, card);
+    AWARE.forEach(a => { const b = H('button', state.aware === a ? 'sel' : '', a, g); b.onclick = () => { state.aware = a; state.step = 1; renderQuiz(); }; });
+  } else {
+    const i = state.step - 1;
+    H('div', 'qnum', `Statement ${i + 1} of ${n}`, card);
+    H('div', 'qtext', Q.items[i].text, card);
+    const g = H('div', 'scale', null, card); g.setAttribute('role', 'radiogroup');
+    LIKERT.forEach((lab, k) => { const b = H('button', state.ans[i] === k + 1 ? 'sel' : '', null, g); b.style.setProperty('--d', [30,24,19,24,30][k] + 'px');
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', state.ans[i] === k + 1); H('b', null, null, b); H('span', null, lab, b);
+      b.onclick = () => { state.ans[i] = k + 1; b.classList.add('sel'); setTimeout(() => { if (state.step === i + 1){ if (i + 1 === n) processing(); else { state.step++; renderQuiz(); } } }, 170); }; });
+  }
+  const foot = H('div', 'qfoot', null, card);
+  const back = H('button', 'link', 'Back', foot); back.onclick = () => { state.step = Math.max(-1, state.step - 1); renderQuiz(); };
+  if (state.step > 0) H('span', 'tiny', 'Keyboard: 1 to 5', foot);
+}
+addEventListener('keydown', e => { if (!$('#tab-quiz').classList.contains('on') || quizEl.hidden) return;
+  if (state.step > 0 && e.key >= '1' && e.key <= '5'){ const b = quizEl.querySelectorAll('.scale button')[+e.key - 1]; if (b) b.click(); } });
+
+function processing(){
+  quizEl.textContent = ''; const card = H('div', 'card', null, quizEl);
+  H('h2', null, 'Scoring your answers…', card);
+  const pipe = H('div', 'pipe', null, card);
+  const steps = ['Centring your 10 answers on the scale midpoint', 'Three linear regressions: reliance, helps, hurts', 'Logistic regression: do you joke first?', 'Softmax classifier: which of four humor profiles?', `Placing you among ${D.sample.n} students`];
+  steps.forEach(t => { const d = H('div', null, null, pipe); H('i', null, null, d); H('span', null, t, d); });
+  [...pipe.children].forEach((d, i) => setTimeout(() => d.classList.add('done'), 260 * (i + 1)));
+  setTimeout(() => showResult(false), 260 * steps.length + 450);
+}
+
+/* ---------- the models (weights exported by analysis/analyze.py) ---------- */
+function score(ans){
+  const x = ans.map(a => a - 3), out = {};
+  const pr = (k) => { const m = Q.linear[k], v = m.b0 + dot(m.w, x), q = m.quantiles; let i = 0; while (i < 100 && q[i + 1] <= v) i++;
+    const frac = i >= 100 ? 0 : clamp((v - q[i]) / Math.max(q[i + 1] - q[i], 1e-9), 0, 1); return { v, p: v <= q[0] ? 1 : v >= q[100] ? 99 : clamp(Math.round(i + frac), 1, 99) }; };
+  ['reliance','helps','hurts','pc1','pc2'].forEach(k => out[k] = pr(k));
+  out.pCoper = 1 / (1 + Math.exp(-(Q.coper_logit.b0 + dot(Q.coper_logit.w, x))));
+  const z = Q.softmax.W.map((w, i) => dot(w, x) + Q.softmax.b[i]), mx = Math.max(...z), e = z.map(v => Math.exp(v - mx)), s = e.reduce((a, b) => a + b, 0);
+  out.probs = e.map(v => v / s); out.arch = out.probs.indexOf(Math.max(...out.probs));
+  const f = {}; Q.items.forEach((it, i) => { (f[it.facet] = f[it.facet] || []).push(ans[i]); });
+  out.facet = Object.fromEntries(Object.entries(f).map(([k, v]) => [k, v.reduce((a, b) => a + b, 0) / v.length]));
+  out.balance = out.helps.p - out.hurts.p;
+  return out;
+}
+const ARCH = [
+  {name:'Reframer', line:'You laugh to get perspective, rarely at your own expense.', advice:'Your humor is working as a tool, not a mask. Keep it. The one check worth making: is a joke ever standing in for action on a problem you could actually fix?'},
+  {name:'Deflector', line:'You make yourself the punchline, and the joke often covers how you feel.', advice:'Try the aftertaste check: ten minutes after the joke, do you feel lighter or worse? Swap one self-roast a day for a joke about the situation instead of about you, and tell one person the unfunny version.'},
+  {name:'All-in comic', line:'You use every kind of humor, including the kinds that bite.', advice:'Your range is a strength. Keep the bonding and the reframing; notice when stress pushes you toward jokes aimed at yourself or at other people, because those are the ones that cost you later.'},
+  {name:'Straight face', line:'Humor is not your go-to when things get hard.', advice:'Nothing is wrong with that. Students with this profile did report lower well-being than Reframers, though, so one experiment is worth trying: on a bad day, look for the single most absurd thing about it.'}];
+
+function showResult(sample){
+  const r = score(state.ans), A = D.clusters.archetypes;
+  quizEl.hidden = true; resEl.hidden = false; resEl.textContent = '';
+  const reg = Object.fromEntries(D.regression.final.map(c => [c.key, c]));
+  const grid = H('div', 'res-grid', null, resEl);
+
+  /* --- profile card --- */
+  const c1 = H('div', 'card', null, grid);
+  const t = H('div', 'type', null, c1), ic = S('svg', {viewBox:'0 0 40 40', width:40, height:40}); mark(ic, r.arch, 20, 20, 14, AC[r.arch]); t.appendChild(ic); H('h2', null, (sample ? 'Sample profile: ' : 'Your profile: ') + ARCH[r.arch].name, t);
+  H('p', 'lead', ARCH[r.arch].line, c1);
+  const v = r.balance > 20 ? ['Mostly adaptive', 'var(--blue)', '✓'] : r.balance < -20 ? ['Leaning maladaptive', 'var(--red)', '!'] : ['Mixed: helps and hurts', 'var(--ink2)', '≈'];
+  const ver = H('span', 'verdict', null, c1), vi = H('i', null, v[2], ver); vi.style.background = v[1]; ver.appendChild(document.createTextNode(v[0]));
+  H('p', 'small', `Softmax classifier: how closely your answers match each profile found by k-means clustering in the dataset (${pct(Q.archetype_accuracy)} cross-validated accuracy against the full questionnaire).`, c1).style.marginTop = '16px';
+  const rows = H('div', 'rows', null, c1);
+  r.probs.forEach((p, i) => { const row = H('div', 'row', null, rows); H('span', null, ARCH[i].name, row); const tr = H('div', 'track', null, row), f = H('i', null, null, tr); f.style.background = AC[i]; H('b', null, pct(p), row); setTimeout(() => f.style.width = pct(p, 1), 80); });
+
+  /* --- three scores --- */
+  const c2 = H('div', 'card', null, grid);
+  H('h3', null, 'Three scores, as percentiles of the 412 students', c2);
+  const m3 = H('div', 'meter3', null, c2);
+  [['Humor Coping Index', 'how much you lean on humor when stressed', r.reliance.p, 'var(--ink)'],
+   ['Humor that helps', 'reframing and bonding', r.helps.p, 'var(--blue)'],
+   ['Humor that hurts', 'self-roasting, deflecting, aftertaste', r.hurts.p, 'var(--red)']].forEach(([name, sub, p, col]) => {
+    const m = H('div', 'm', null, m3), h = H('div', 'h', null, m), l = H('div', null, null, h); H('span', null, name, l); H('div', 'small', sub, l); H('b', null, String(p), h);
+    const bar = H('div', 'bar', null, m), f = H('i', null, null, bar); f.style.background = col; H('u', null, null, bar); setTimeout(() => f.style.width = p + '%', 80);
+    H('div', 'tiny', `Higher than ${p}% of students in the dataset`, m); });
+  H('p', 'small', `Each score is a linear regression from your 10 answers to a full-battery measure. Ten items recover ${pct((Q.cv_r2_at_k.reliance + Q.cv_r2_at_k.helps + Q.cv_r2_at_k.hurts) / 3)} of the variance of the 96-item survey (cross-validated).`, c2).style.marginTop = '16px';
+
+  /* --- awareness --- */
+  const hiddenShare = pct(P.hidden_among_copers.p), isCoper = r.pCoper >= .5, saidYes = state.aware === 'Yes';
+  const aw = H('div', 'aware' + (isCoper && !saidYes ? ' hidden-coper' : ''), null, resEl); aw.style.marginBottom = '16px';
+  const said = `You said “${state.aware}”. The logistic model puts the chance that you joke first under stress at ${pct(r.pCoper)}.`;
+  const [h, body] = isCoper && !saidYes ? ['You might be a hidden coper.', `${said} In the dataset, ${hiddenShare} of students who joked first did not describe themselves as coping with humor either, and ${pct(D.awareness.hidden_switched_to_yes.p)} of them changed their answer once the survey made them think about it.`]
+    : isCoper ? ['You called it.', `${said} Knowing you do it matters: students who joked first and knew it reported higher well-being than those who did not (d = ${Math.abs(D.hidden_vs_aware.who5.d).toFixed(2)}).`]
+    : saidYes ? ['You may joke less than you think.', `${said} Your answers look more like someone who reaches for other strategies first.`]
+    : ['Consistent: humor is not your default.', `${said} What you say and what your answers show line up.`];
+  H('h3', null, h, aw); H('p', 'small', body, aw).style.margin = '0';
+
+  /* --- analysis + map --- */
+  const grid2 = H('div', 'res-grid', null, resEl);
+  const c3 = H('div', 'card', null, grid2);
+  H('h3', null, 'How you use humor', c3);
+  const ul = H('ul', 'pts', null, c3), F = r.facet, add = (text, col) => { const li = H('li', null, text, ul); li.style.setProperty('--c', col); };
+  if (F.reframe >= 3.75) add(`You joke to get perspective. Self-enhancing humor was the style most strongly tied to well-being (β = +${reg.hsq_se.beta.toFixed(2).slice(1)}) and it cushioned the effect of stress.`, 'var(--blue)');
+  else if (F.reframe <= 2.5) add('Laughing about a problem does not usually leave you readier to face it. That reframing step is the part of humor that predicted well-being.', 'var(--gray)');
+  if (F.bond >= 3.75) add(`You use humor to connect: laughing with people about a shared struggle. Affiliative humor also went with higher well-being (β = +${reg.hsq_af.beta.toFixed(2).slice(1)}).`, 'var(--blue)');
+  if (F.reach >= 3.75) add('Jokes arrive early for you: the more stressed you are, the more of them you make. On its own, how much people joked barely predicted how they were doing.', 'var(--ink2)');
+  if (F.deflect >= 4) add(`Asked how you really are, you answer with a joke. Deflecting was the clearest marker of students who did not realize they were coping (odds ratio ${D.hidden_model.coefs.find(c => c.key === 'hci_deflect').or.toFixed(1)}).`, 'var(--red)');
+  if (F.roast >= 4) add(`You let people laugh at you more than you are comfortable with. Self-defeating humor predicted lower well-being (β = −${Math.abs(reg.hsq_sd.beta).toFixed(2).slice(1)}).`, 'var(--red)');
+  if (F.after >= 3.5) add(`Your jokes leave an aftertaste: regret, or wishing you had said how you felt. In the data that aftertaste carried ${pct(D.mediation.prop_mediated)} of the link between self-defeating humor and lower well-being.`, 'var(--red)');
+  else if (F.after <= 2) add('Your jokes rarely leave an aftertaste. That is the best single sign that humor is working for you rather than against you.', 'var(--blue)');
+  if (!ul.children.length) add('Your answers sit near the middle on every facet: humor is one tool among several for you, used in moderation.', 'var(--ink2)');
+  H('h3', null, 'What to try', c3).style.marginTop = '18px';
+  H('p', null, ARCH[r.arch].advice, c3);
+  const det = H('details', null, null, c3); H('summary', null, 'Under the hood: your answers and the model weights', det);
+  const tb = H('table', 'w', null, det), hr = H('tr', null, null, tb); ['Statement', 'You', 'Helps', 'Hurts'].forEach((x, i) => H('th', i ? 'n' : '', x, hr));
+  Q.items.forEach((it, i) => { const tr = H('tr', null, null, tb); H('td', null, it.text, tr); H('td', 'n', String(state.ans[i]), tr);
+    ['helps','hurts'].forEach(k => { const w = Q.linear[k].w[i]; H('td', 'n', (w < 0 ? '−' : '+') + Math.abs(w).toFixed(2), tr); }); });
+  H('p', 'tiny', 'Weights are regression coefficients per scale point above or below “Neutral”. The algorithm chose these 10 statements from 24 by forward selection, adding whichever one improved cross-validated prediction most.', det).style.marginTop = '8px';
+
+  const c4 = H('div', 'card', null, grid2);
+  H('h3', null, 'You, among the 412', c4);
+  const leg = H('div', 'legend', null, c4); ARCH.forEach((a, i) => { const s = H('span', null, null, leg), sv = S('svg', {viewBox:'0 0 14 14', width:14, height:14}); mark(sv, i, 7, 7, 5, AC[i]); s.appendChild(sv); s.appendChild(document.createTextNode(a.name)); });
+  const fig = H('div', 'fig', null, c4), W = 440, Hh = 400, m = {l:26, r:8, t:8, b:26}, s = svg(fig, W, Hh);
+  const x = lin(-4, 4, m.l, W - m.r), y = lin(-3.8, 3.8, Hh - m.b, m.t);
+  S('line', {x1:x(0), x2:x(0), y1:m.t, y2:Hh - m.b, stroke:'var(--grid)'}, s); S('line', {x1:m.l, x2:W - m.r, y1:y(0), y2:y(0), stroke:'var(--grid)'}, s);
+  PE.pc1.forEach((vv, i) => mark(s, PE.arch[i], x(vv), y(PE.pc2[i]), 3.6, AC[PE.arch[i]], {opacity:.55, stroke:'var(--card)', 'stroke-width':.8}));
+  S('text', {x:(m.l + W - m.r)/2, y:Hh - 5, 'text-anchor':'middle', 'font-size':13, class:'t2', text:'← less humor overall · more →'}, s);
+  S('text', {x:13, y:Hh/2, 'text-anchor':'middle', 'font-size':13, class:'t2', transform:`rotate(-90 13 ${Hh/2})`, text:'← maladaptive styles · adaptive styles →'}, s);
+  const ux = x(clamp(r.pc1.v, -3.7, 3.7)), uy = y(clamp(r.pc2.v, -3.5, 3.5));
+  const you = S('g', {}, s); S('circle', {cx:ux, cy:uy, r:17, fill:'none', stroke:'var(--ink)', 'stroke-width':2}, you);
+  S('circle', {cx:ux, cy:uy, r:7, fill:'var(--ink)', stroke:'var(--card)', 'stroke-width':2.5}, you);
+  S('text', {x:ux, y:uy - 25, 'text-anchor':'middle', 'font-size':16, 'font-weight':700, class:'halo', text:'You'}, you);
+  const hit = S('rect', {x:m.l, y:m.t, width:W - m.l - m.r, height:Hh - m.t - m.b, fill:'transparent'}, s);
+  hit.addEventListener('pointermove', ev => { const b = s.getBoundingClientRect(), px = (ev.clientX - b.left) / b.width * W, py = (ev.clientY - b.top) / b.height * Hh; let best = -1, bd = 900;
+    PE.pc1.forEach((vv, i) => { const d = (x(vv) - px) ** 2 + (y(PE.pc2[i]) - py) ** 2; if (d < bd){ bd = d; best = i; } });
+    if (best < 0) return hideTip(); showTip(ev, t => { H('b', null, ARCH[PE.arch[best]].name, t); H('div', null, `Well-being ${PE.who5[best]} / 100 · stress ${PE.pss[best]} / 40`, t); H('div', null, `Joked first in ${PE.hc[best]} of 8 scenarios`, t); }); });
+  hit.addEventListener('pointerleave', hideTip);
+  H('p', 'small', `Each mark is one student, positioned by principal component analysis of their four humor-style scores. Your position is predicted from your 10 answers. ${A[r.arch].name}s averaged ${A[r.arch].who5.toFixed(0)} / 100 on well-being; ${pct(A[r.arch].felt_bad)} of them feel bad after joking at least sometimes.`, c4).style.marginTop = '10px';
+
+  const end = H('div', null, null, resEl); end.style.cssText = 'display:flex;gap:12px;align-items:center;flex-wrap:wrap';
+  const again = H('button', 'btn', 'Take it again', end); again.onclick = () => { state.step = -1; state.aware = null; state.ans.fill(null); renderQuiz(); scrollTo({top:0}); };
+  H('span', 'tiny', 'Educational demo. Not a diagnosis.', end);
+  scrollTo({top:0});
+}
+renderQuiz();
+
+/* =====================================================================  THE 412  */
+inits.dots = function(){
+  const N = D.sample.n, cols = 46, rows = 9, pitch = 20, top = 64, W = cols * pitch, Hh = top + rows * pitch + 6, fig = $('#dot-fig'), s = svg(fig, W, Hh);
+  const labels = S('g', {}, s), circles = PE.coper.map((_, i) => S('circle', {r:7.3, cx:0, cy:0, fill:'var(--gray)', tabindex:-1}, s));
+  const hidden = i => PE.coper[i] && PE.aware[i] < 2;
+  const views = [
+    {name:'Everyone', line:`${N} students answered the survey. Start here.`, groups:[['students', 'var(--gray)']], g:() => 0, note:'Use the buttons to regroup the same 412 students.'},
+    {name:'What they did', line:`${pct(P.coper.p)} chose a joke as their first reaction in at least 3 of 8 stress scenarios.`, groups:[['joked first', 'var(--ink)'], ['did not', 'var(--gray)']], g:i => PE.coper[i] ? 0 : 1, note:'With four possible reactions, chance alone would give 2 of 8.'},
+    {name:'What they said', line:`Yet only ${pct(P.says_yes.p)} said yes when asked “Do you use humor to cope?”`, groups:[['said yes', 'var(--blue)'], ['not sure', 'var(--yellow)'], ['said no', 'var(--gray)']], g:i => 2 - PE.aware[i], note:'Asked at the very start, before any humor question could prime the answer.'},
+    {name:'The gap', line:`${pct(P.hidden_among_copers.p)} of the students who joke first do not see it as coping. Call them hidden copers.`, groups:[['open copers', 'var(--blue)'], ['hidden copers', 'var(--red)'], ['others', 'var(--gray)']], g:i => hidden(i) ? 1 : PE.coper[i] ? 0 : 2, note:`Hidden copers deflect more, reframe less, and report lower well-being (d = ${D.hidden_vs_aware.who5.d.toFixed(2).replace('-','−')}).`},
+    {name:'After the survey', line:`Asked again at the end, ${pct(D.awareness.hidden_switched_to_yes.p)} of hidden copers changed their answer to yes.`, groups:[['open copers', 'var(--blue)'], ['noticed', 'var(--yellow)'], ['still hidden', 'var(--red)'], ['others', 'var(--gray)']], g:i => !PE.coper[i] ? 3 : !hidden(i) ? 0 : PE.post[i] === 2 ? 1 : 2, note:'Yellow: hidden copers who noticed during the survey. Answering questions about a habit is sometimes enough to see it.'},
+    {name:'The aftertaste', line:`${pct(P.felt_bad_sometimes_plus.p)} of students who joke first feel bad afterwards, at least sometimes.`, groups:[['feel bad sometimes or more', 'var(--red)'], ['rarely or never', 'var(--blue)'], ['others', 'var(--gray)']], g:i => !PE.coper[i] ? 2 : PE.felt_bad[i] >= 3 ? 0 : 1, note:'Asked as: “After joking about something painful, how often do you feel bad?”'}];
+  const seg = $('#dot-views');
+  function show(k){ const v = views[k]; [...seg.children].forEach((b, j) => b.setAttribute('aria-pressed', j === k));
+    $('#dot-line').textContent = v.line; $('#dot-note').textContent = v.note;
+    const order = PE.coper.map((_, i) => i).sort((a, b) => v.g(a) - v.g(b) || a - b), counts = v.groups.map(() => 0);
+    order.forEach((i, pos) => { const g = v.g(i); counts[g]++; const c = circles[i]; c.style.transitionDelay = (pos * .7) + 'ms';
+      c.style.transform = `translate(${Math.floor(pos / rows) * pitch + pitch / 2}px, ${top + (pos % rows) * pitch + pitch / 2}px)`; c.style.fill = v.groups[g][1]; });
+    labels.textContent = ''; let start = 0;
+    v.groups.forEach((g, j) => { const x0 = Math.ceil(start / rows) * pitch, x1 = Math.floor((start + counts[j]) / rows) * pitch; start += counts[j];
+      if (!counts[j]) return; S('rect', {x:x0 + 2, y:top - 10, width:Math.max(x1 - x0 - 6, 8), height:3.5, rx:1.75, fill:g[1]}, labels);
+      S('text', {x:x0 + 2, y:top - 36, 'font-size':21, 'font-weight':700, text:String(counts[j])}, labels);
+      S('text', {x:x0 + 2, y:top - 17, 'font-size':14.5, class:'t2', text:g[0]}, labels); });
+  }
+  views.forEach((v, k) => { const b = H('button', null, v.name, seg); b.onclick = () => show(k); });
+  circles.forEach((c, i) => { c.addEventListener('pointermove', ev => showTip(ev, t => { H('b', null, D.clusters.archetypes[PE.arch[i]].name, t);
+      H('div', null, `Joked first in ${PE.hc[i]} of 8 scenarios`, t); H('div', null, `Said “${AWARE[2 - PE.aware[i]]}” to coping with humor`, t); H('div', null, `Well-being ${PE.who5[i]} / 100`, t); }));
+    c.addEventListener('pointerleave', hideTip); });
+  show(0); setTimeout(() => show(1), 900);
+};
+
+/* =====================================================================  GRADIENT DESCENT  */
+inits.learn = function(){
+  const G = D.gd, xs = PE.sd, ys = PE.after, n = xs.length, zx = xs.map(v => (v - G.x_mean) / G.x_sd), zy = ys.map(v => (v - G.y_mean) / G.y_sd);
+  const W = 560, Hh = 380, m = {l:44, r:12, t:10, b:44}, sc = svg($('#gd-scatter'), W, Hh), x = lin(6, 58, m.l, W - m.r), y = lin(.8, 5.2, Hh - m.b, m.t);
+  [1,2,3,4,5].forEach(t => { S('line', {x1:m.l, x2:W - m.r, y1:y(t), y2:y(t), stroke:'var(--grid)'}, sc); S('text', {x:m.l - 8, y:y(t) + 5, 'text-anchor':'end', 'font-size':13.5, class:'tm', text:t}, sc); });
+  [10,20,30,40,50].forEach(t => S('text', {x:x(t), y:Hh - m.b + 18, 'text-anchor':'middle', 'font-size':13.5, class:'tm', text:t}, sc));
+  S('text', {x:(m.l + W - m.r)/2, y:Hh - 6, 'text-anchor':'middle', 'font-size':14, class:'t2', text:'Self-defeating humor (HSQ, 8–56)'}, sc);
+  S('text', {x:m.l - 34, y:m.t + 6, 'font-size':14, class:'t2', text:'Aftertaste (1–5)'}, sc);
+  xs.forEach((v, i) => S('circle', {cx:x(v + ((i * 7) % 5 - 2) * .12), cy:y(ys[i]), r:3, fill:'var(--gray)', opacity:.6}, sc));
+  const target = S('line', {stroke:'var(--axis)', 'stroke-width':2}, sc), line = S('line', {stroke:'var(--blue)', 'stroke-width':4, 'stroke-linecap':'round'}, sc);
+  const raw = (b0, b1, xv) => G.y_mean + G.y_sd * (b0 + b1 * (xv - G.x_mean) / G.x_sd);
+  const setLine = (el, b0, b1) => { el.setAttribute('x1', x(8)); el.setAttribute('x2', x(56)); el.setAttribute('y1', y(clamp(raw(b0, b1, 8), .5, 5.5))); el.setAttribute('y2', y(clamp(raw(b0, b1, 56), .5, 5.5))); };
+  /* error surface in (slope, intercept): for standardized data, loss = 1 - 2*b1*r + b1^2 + b0^2 */
+  const BW = 400, BH = 380, bm = {l:46, r:10, t:10, b:44}, bs = svg($('#gd-bowl'), BW, BH), bx = lin(-1.15, 1.35, bm.l, BW - bm.r), by = lin(-1.15, 1.15, BH - bm.b, bm.t);
+  const clip = S('clipPath', {id:'bowlclip'}, S('defs', {}, bs)); S('rect', {x:bm.l, y:bm.t, width:BW - bm.l - bm.r, height:BH - bm.t - bm.b}, clip);
+  const rings = S('g', {'clip-path':'url(#bowlclip)'}, bs);
+  for (let k = 9; k >= 1; k--) S('circle', {cx:bx(G.r), cy:by(0), r:(bx(1) - bx(0)) * k * .22, fill:'var(--blue)', opacity:.055}, rings);
+  S('rect', {x:bm.l, y:bm.t, width:BW - bm.l - bm.r, height:BH - bm.t - bm.b, fill:'none', stroke:'var(--grid)'}, bs);
+  [-1,0,1].forEach(t => { S('text', {x:bx(t), y:BH - bm.b + 18, 'text-anchor':'middle', 'font-size':13.5, class:'tm', text:t}, bs); S('text', {x:bm.l - 8, y:by(t) + 5, 'text-anchor':'end', 'font-size':13.5, class:'tm', text:t}, bs); });
+  S('text', {x:(bm.l + BW - bm.r)/2, y:BH - 6, 'text-anchor':'middle', 'font-size':14, class:'t2', text:'Slope (standardized)'}, bs);
+  S('text', {x:14, y:(BH - bm.b + bm.t)/2, 'text-anchor':'middle', 'font-size':14, class:'t2', transform:`rotate(-90 14 ${(BH - bm.b + bm.t)/2})`, text:'Intercept'}, bs);
+  S('circle', {cx:bx(G.r), cy:by(0), r:5, fill:'var(--ink)'}, bs); S('text', {x:bx(G.r) + 10, y:by(0) - 9, 'font-size':13.5, 'font-weight':700, class:'halo', text:'lowest error'}, bs);
+  const trail = S('polyline', {fill:'none', stroke:'var(--blue)', 'stroke-width':2.5, 'stroke-linejoin':'round', 'clip-path':'url(#bowlclip)'}, bs), ball = S('circle', {r:8, fill:'var(--blue)', stroke:'var(--card)', 'stroke-width':2.5}, bs);
+  let b0, b1, step, timer = null, lr = .15, pts;
+  const loss = () => zx.reduce((s, v, i) => s + (zy[i] - b0 - b1 * v) ** 2, 0) / n;
+  function paint(){ setLine(line, b0, b1); ball.setAttribute('cx', clamp(bx(b1), bm.l, BW - bm.r)); ball.setAttribute('cy', clamp(by(b0), bm.t, BH - bm.b)); trail.setAttribute('points', pts.join(' '));
+    const L = loss(); $('#gd-step').textContent = step; $('#gd-slope').textContent = (b1 * G.y_sd / G.x_sd).toFixed(3); $('#gd-loss').textContent = L.toFixed(3); $('#gd-r2').textContent = L > 1 ? '0%' : pct(1 - L); }
+  function reset(){ clearInterval(timer); timer = null; b0 = .85; b1 = -.75; step = 0; pts = [bx(b1) + ',' + by(b0)]; $('#gd-go').textContent = 'Start learning';
+    $('#gd-note').textContent = `Target found by ordinary least squares: slope ${G.b1.toFixed(3)}, r = ${G.r.toFixed(2).slice(1)}, R² = ${pct(G.r2)}. Gradient descent should land on the same line.`; paint(); }
+  function tick(){ let g0 = 0, g1 = 0; for (let i = 0; i < n; i++){ const e = b0 + b1 * zx[i] - zy[i]; g0 += e; g1 += e * zx[i]; }
+    b0 -= lr * 2 * g0 / n; b1 -= lr * 2 * g1 / n; step++; pts.push(bx(b1).toFixed(1) + ',' + by(b0).toFixed(1)); paint();
+    if (Math.hypot(g0, g1) / n < 2e-4 || step >= 160){ clearInterval(timer); timer = null; $('#gd-go').textContent = 'Run again';
+      $('#gd-note').textContent = step >= 160 ? `Stopped after ${step} steps without settling. With steps this big the model keeps overshooting the bottom of the bowl: a learning rate that is too high.` : `Converged in ${step} steps on the same line ordinary least squares gives: every extra point of self-defeating humor adds ${G.b1.toFixed(3)} points of aftertaste (r = ${G.r.toFixed(2).slice(1)}).`; } }
+  $('#gd-go').onclick = () => { if (timer) return; if (step) reset(); timer = setInterval(tick, lr < .1 ? 45 : 110); $('#gd-go').textContent = 'Learning…'; };
+  $('#gd-reset').onclick = reset;
+  document.querySelectorAll('#gd-lr button').forEach(b => b.onclick = () => { lr = +b.dataset.lr; document.querySelectorAll('#gd-lr button').forEach(o => o.setAttribute('aria-pressed', o === b)); reset(); });
+  setLine(target, 0, G.r); reset();
+};
+
+/* =====================================================================  SIMULATOR  */
+inits.sim = function(){
+  const k = .5, r = .6, q = 1.2, lam = .35, dt = .02, T = 16, pulses = [[5, 7.5], [13, 15]], W = 980, Hh = 340, m = {l:40, r:12, t:26, b:34};
+  function sim(R, Mx, I0){ let s = 0, d = 0; const out = []; for (let t = 0; t <= T + 1e-9; t += dt){ const I = pulses.some(p => t >= p[0] && t < p[1]) ? I0 : 0;
+      const dS = I - (k + r * R) * s - q * Mx * s + lam * d, dD = q * Mx * s - lam * d; s += dS * dt; d += dD * dt; out.push([t, s, d]); } return out; }
+  function draw(){ const R = +$('#s-r').value, Mx = +$('#s-m').value, I0 = +$('#s-i').value, you = sim(R, Mx, I0), none = sim(0, 0, I0);
+    $('#s-r-v').textContent = R === 0 ? 'none' : R < .4 ? 'a little' : R < .75 ? 'often' : 'constantly'; $('#s-m-v').textContent = Mx === 0 ? 'none' : Mx < .4 ? 'a little' : Mx < .75 ? 'often' : 'constantly'; $('#s-i-v').textContent = I0 < .8 ? 'light' : I0 < 1.2 ? 'typical' : 'brutal';
+    const ymax = Math.max(2.2, ...you.map(d => Math.max(d[1], d[2])), ...none.map(d => d[1])) * 1.06, s = svg($('#sim-fig'), W, Hh), x = lin(0, T, m.l, W - m.r), y = lin(0, ymax, Hh - m.b, m.t);
+    pulses.forEach((p, i) => { S('rect', {x:x(p[0]), y:m.t, width:x(p[1]) - x(p[0]), height:Hh - m.b - m.t, fill:'var(--soft)'}, s); S('text', {x:(x(p[0]) + x(p[1]))/2, y:m.t - 8, 'text-anchor':'middle', 'font-size':13.5, class:'t2', text:i ? 'Finals' : 'Midterms'}, s); });
+    for (let t = 0; t <= ymax; t += .5){ S('line', {x1:m.l, x2:W - m.r, y1:y(t), y2:y(t), stroke:'var(--grid)'}, s); S('text', {x:m.l - 8, y:y(t) + 5, 'text-anchor':'end', 'font-size':13, class:'tm', text:t.toFixed(1)}, s); }
+    [0,2,4,6,8,10,12,14,16].forEach(t => S('text', {x:x(t), y:Hh - m.b + 18, 'text-anchor':'middle', 'font-size':13, class:'tm', text:t ? t : 'Week 0'}, s));
+    const path = (a, j) => a.filter((_, i) => i % 4 === 0).map((d, i) => (i ? 'L' : 'M') + x(d[0]).toFixed(1) + ',' + y(d[j]).toFixed(1)).join('');
+    S('path', {d:path(you, 2) + `L${x(T)},${y(0)}L${x(0)},${y(0)}z`, fill:'var(--red-wash)'}, s); S('path', {d:path(you, 2), fill:'none', stroke:'var(--red-1)', 'stroke-width':1.2}, s);
+    S('path', {d:path(none, 1), fill:'none', stroke:'var(--gray)', 'stroke-width':2.5}, s); S('path', {d:path(you, 1), fill:'none', stroke:'var(--blue)', 'stroke-width':3.5, 'stroke-linejoin':'round'}, s);
+    S('line', {x1:m.l, x2:W - m.r, y1:y(0), y2:y(0), stroke:'var(--axis)'}, s);
+    const cross = S('line', {y1:m.t, y2:Hh - m.b, stroke:'var(--ink)', 'stroke-width':1, opacity:0}, s), hit = S('rect', {x:m.l, y:m.t, width:W - m.l - m.r, height:Hh - m.t - m.b, fill:'transparent'}, s);
+    hit.addEventListener('pointermove', ev => { const b = s.getBoundingClientRect(), t = clamp(((ev.clientX - b.left) / b.width * W - m.l) / (W - m.l - m.r) * T, 0, T), i = Math.round(t / dt);
+      cross.setAttribute('x1', x(t)); cross.setAttribute('x2', x(t)); cross.setAttribute('opacity', .5);
+      showTip(ev, tp => { H('b', null, 'Week ' + t.toFixed(1), tp); H('div', null, 'Your felt stress ' + you[i][1].toFixed(2), tp); H('div', null, 'Your hidden debt ' + you[i][2].toFixed(2), tp); H('div', null, 'No humor ' + none[i][1].toFixed(2), tp); }); });
+    hit.addEventListener('pointerleave', () => { cross.setAttribute('opacity', 0); hideTip(); });
+    const avg = a => a.reduce((s2, d) => s2 + d[1], 0) / a.length, at = (a, t, j) => a[Math.round(t / dt)][j], rel = avg(you) / avg(none) - 1;
+    $('#sim-peak').textContent = Math.max(...you.map(d => d[1])).toFixed(2); $('#sim-mid').textContent = at(you, 12, 1).toFixed(2); $('#sim-debt').textContent = at(you, 16, 2).toFixed(2);
+    $('#sim-vs').textContent = (rel <= 0 ? '−' : '+') + Math.abs(100 * rel).toFixed(0) + '%';
+    $('#sim-note').textContent = Mx > .5 && R < .4 ? 'Mostly deflecting: stress looks lower during exams, but it never returns to zero between them, and the debt from midterms is still there when finals arrive.'
+      : R > .5 && Mx < .4 ? 'Mostly reframing: stress peaks lower and clears fully between exams, with almost nothing carried forward.'
+      : R > .5 && Mx > .5 ? 'Both at once: reframing clears a lot, but deflection still parks some stress as debt. This is the all-in comic.'
+      : 'Little humor of either kind: this is close to the gray no-humor line. In the long run only reframing lowers stress: S* = I / (k + rR).'; }
+  ['#s-r', '#s-m', '#s-i'].forEach(id => $(id).addEventListener('input', draw)); draw();
+};
+})();
+</script>
+</body>
+</html>
